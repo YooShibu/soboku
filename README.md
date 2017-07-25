@@ -37,7 +37,7 @@ setState(last, "Nobunaga");
 
 ~~~
 
-## Api
+## API
 
 ### `state(initial)`
 ### `setState(state, currentState)`
