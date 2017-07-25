@@ -21,7 +21,7 @@
     "prepublish": "node ./bundle.js",
     "bundle": "node ./bundle.js",
     "remap-coverage-html": "remap-istanbul -i ./coverage/coverage.json -o ./coverage/ts-report -t html",
-    "remap-coverage-json": "remap-istanbul -i ./coverage/coverage.json -o ./coverage/lconv.ts.json -t json"
+    "remap-coverage-json": "remap-istanbul -i ./coverage/coverage.json -o ./coverage/coverage.ts.json -t json"
   },
   "keywords": [
     "state"
