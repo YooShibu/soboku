@@ -6,6 +6,6 @@ cache:
   directories:
     - node_modules
 install:
-  - npm i -D -g codecov
+  - npm i -g codecov
 after_success:
   - codecov
