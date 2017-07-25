@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/YooShibu/soboku.svg?branch=master)](https://travis-ci.org/YooShibu/soboku)
+
+
 # soboku
 
 A javascript package to manage the app state.
