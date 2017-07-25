@@ -24,7 +24,8 @@
     "remap-coverage-json": "remap-istanbul -i ./coverage/coverage.json -o ./coverage/coverage.ts.json -t json"
   },
   "keywords": [
-    "state"
+    "state",
+    "reactive"
   ],
   "author": "Yohei Shibuya",
   "license": "MIT",
