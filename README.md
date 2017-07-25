@@ -32,7 +32,7 @@ setState(first, "Nobunaga");
 // { first: "Nobunaga", last: "", full: "Nobunaga" }
 
 setState(last, "Oda");
-// Oda Nobunaga
+// Nobunaga Oda
 // { first: "Nobunaga", last: "Oda", full: "Nobunaga Oda" }
 
 ~~~
