@@ -27,13 +27,13 @@ log(getState(name));
 on(full, log);
 on(name, log);
 
-setState(first, "Oda");
-// Oda
-// { first: "Oda", last: "", full: "Oda" }
+setState(first, "Nobunaga");
+// Nobunaga
+// { first: "Nobunaga", last: "", full: "Nobunaga" }
 
-setState(last, "Nobunaga");
+setState(last, "Oda");
 // Oda Nobunaga
-// { first: "Oda", last: "Nobunaga", full: "Oda Nobunaga" }
+// { first: "Nobunaga", last: "Oda", full: "Nobunaga Oda" }
 
 ~~~
 
