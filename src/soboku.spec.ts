@@ -1,19 +1,19 @@
-import { createSoboku } from "./soboku";
+import { assignSobokuProp } from "./soboku";
 import { SobokuProp, State, StateProp } from "../index.d";
 
 
 describe("soboku", () => {
 
-    describe("createSoboku", () => {
+    describe("assignSobokuProp", () => {
         it("should create basic soboku from empty object", () => {
-            const soboku = createSoboku({});
+            const soboku = assignSobokuProp({});
             expect(soboku).toEqual({
                 __soboku__: true,
                 _listeners: [],
             });
         });
         it("should create soboku with assigned partial props", () => {
-            const soboku = createSoboku({ _state: "" });
+            const soboku = assignSobokuProp({ _state: "" });
             const result: State<string> = {
                 __soboku__: true,
                 _listeners: [],

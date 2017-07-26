@@ -1,6 +1,6 @@
 import { state, setState, getState } from "./state";
 import { SobokuProp } from "../index.d";
-import { createSoboku } from "./soboku";
+import { assignSobokuProp } from "./soboku";
 import { on } from "./event";
 import { combine } from "./calc";
 import { has } from "./util";

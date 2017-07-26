@@ -1,11 +1,11 @@
 import { Soboku, State, StateProp, Calc } from "../index.d";
-import { createSoboku } from "./soboku";
+import { assignSobokuProp } from "./soboku";
 import { emitListeners } from "./event";
 import { has } from "./util";
 
 
 export function state<T> (initial: T): State<T> {
-    return createSoboku<T, StateProp<T>>({ _state: initial });
+    return assignSobokuProp<T, StateProp<T>>({ _state: initial });
 }
 
 export function setState<T>(soboku: State<T>, state: T): T {
