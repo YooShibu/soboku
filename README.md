@@ -44,6 +44,7 @@ setState(last, "Oda");
 ### `getState(soboku)`
 ### `dependency(func, ...sobokus)`
 ### `combine(sobokuObj)`
+### `mirror(state)`
 ### `on(soboku, listener, emitFirstTime = true)`
 ### `removeListener(soboku, listener)`
 ### `isSoboku(value)`
