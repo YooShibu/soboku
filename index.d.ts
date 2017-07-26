@@ -1,17 +1,17 @@
-export type SobokuProp<T> = {
+export interface SobokuProp<T> {
     readonly _listeners:((state: T) => void)[];
     readonly __soboku__: true;
 }
 
-export type StateProp<T> = {
+export interface StateProp<T> {
     _state: T;
 }
 
 export type State<T> = SobokuProp<T> & StateProp<T>;
 
-export type CalcProp<T> = {
+export interface CalcProp<T> {
     readonly _getter: () => T;
-    readonly _depends: Soboku<any>[]
+    readonly _depends: Soboku<any>[];
 }
 
 export type Calc<T> = SobokuProp<T> & CalcProp<T>;
