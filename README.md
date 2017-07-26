@@ -51,6 +51,7 @@ setState(last, "Oda");
 ## Top-Level API
 
 ### `emitListener<T>(prop: SobokuProp<T>, value: T): void`
+### `getSobokuProp<T>(): SobokuProp<T>`
 ### `assignSobokuProp<T, U>(props: U): SobokuProp<T> & U`
 
 ## LICENSE

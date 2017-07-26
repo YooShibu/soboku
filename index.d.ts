@@ -36,4 +36,5 @@ export function dependency<R>(func: (...args: any[]) => R, ...states: Soboku<any
 export function mirror<T>(state: State<T>): Calc<T>;
 
 export function emitListeners<T>(listeners: Listener<T>[], val: T): void;
+export function getSobokuProp<T>(): SobokuProp<T>;
 export function assignSobokuProp<T, U>(props: U): SobokuProp<T> & U;
