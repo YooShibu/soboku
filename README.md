@@ -49,5 +49,10 @@ setState(last, "Oda");
 ### `removeListener(soboku, listener)`
 ### `isSoboku(value)`
 
+## Top-Level API
+
+### `emitListener(sobokuprop, value)`
+### `assignSobokuProp(props)`
+
 ## LICENSE
 MIT
