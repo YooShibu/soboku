@@ -1,4 +1,4 @@
-import { omit, optimizeCB, has, isSoboku, unique } from "./util";
+import { omit, optimizeCB, has, isSoboku, unique, identity } from "./util";
 import { state } from "./state";
 import { dependency } from "./calc";
 import { spyOnAll } from "./helper/helper";
@@ -65,6 +65,14 @@ describe("util", () => {
             const source = [1, 2, 1, 3, 2, 1];
             const result = unique(source).sort();
             expect(result).toEqual([1, 2, 3]);
+        });
+    });
+
+    describe("identity", () => {
+        it("should return argument", () => {
+            const source = [1, 2, 3];
+            const result = identity(source);
+            expect(result).toBe(source);
         });
     });
 

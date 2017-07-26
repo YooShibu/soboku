@@ -41,6 +41,10 @@ export function unique<T>(arr: T[]): T[] {
     return result;
 }
 
+export function identity<T>(x: T): T {
+    return x;
+}
+
 export function isSoboku(x: any): boolean {
     return typeof x === "object" && has(x, "__soboku__") === true;
 }
