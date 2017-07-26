@@ -1,7 +1,7 @@
 import { Soboku, State, StateProp, Calc } from "../index.d";
 import { assignSobokuProp } from "./soboku";
 import { emitListeners } from "./event";
-import { has } from "./util";
+import { has, isCalc } from "./util";
 
 
 export function state<T> (initial: T): State<T> {
@@ -15,7 +15,7 @@ export function setState<T>(soboku: State<T>, state: T): T {
 }
 
 export function  getState<T>(target: Soboku<T>): T {
-    if (has(target, "_getter") === true)
-        return (target as Calc<T>)._getter();
-    return (target as State<T>)._state;
+    if (isCalc(target))
+        return target._getter();
+    return target._state;
 }

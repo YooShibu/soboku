@@ -1,6 +1,6 @@
-import { omit, optimizeCB, has, isSoboku, unique, identity } from "./util";
+import { omit, optimizeCB, has, isSoboku, unique, identity, isCalc } from "./util";
 import { state } from "./state";
-import { dependency } from "./calc";
+import { dependency, mirror } from "./calc";
 import { spyOnAll } from "./helper/helper";
 
 
@@ -73,6 +73,18 @@ describe("util", () => {
             const source = [1, 2, 3];
             const result = identity(source);
             expect(result).toBe(source);
+        });
+    });
+
+    describe("isCalc", () => {
+        it("should return true if arguemnt is Calc", () => {
+            const a = state(0);
+            const b = mirror(a);
+            expect(isCalc(b)).toBeTruthy();
+        });
+        it("should return false if argument is State", () => {
+            const a = state(0);
+            expect(isCalc(a)).toBeFalsy();
         });
     });
 
