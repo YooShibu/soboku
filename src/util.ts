@@ -48,7 +48,3 @@ export function identity<T>(x: T): T {
 export function isCalc<T>(x: Soboku<T>): x is Calc<T> {
     return has(x, "_depends") && has(x, "_getter");
 }
-
-export function isSoboku(x: any): x is SobokuProp<any> {
-    return typeof x === "object" && has(x, "__soboku__");
-}

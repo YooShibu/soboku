@@ -45,9 +45,8 @@ setState(last, "Oda");
 ### `dependency<T>(func: (...sobokus: Soboku<any>[]) => T, ...sobokus: Soboku<any>[]): Calc<T>`
 ### `combine<T>(sobokuObj: { [K in keyof T]: Soboku<T[K]> }): Calc<T>`
 ### `mirror<T>(state: State<T>): Calc<T>`
-### `on<T>(soboku: SobokuProp<T>, listener: (val: T) => void)`
-### `removeListener<T>(soboku: SobokuProp<T>, listener: (val: T) => void)`
-### `isSoboku(value: any): boolean`
+### `on<T>(prop: SobokuProp<T>, listener: (val: T) => void)`
+### `removeListener<T>(prop: SobokuProp<T>, listener: (val: T) => void)`
 
 ## Top-Level API
 

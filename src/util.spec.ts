@@ -1,4 +1,4 @@
-import { omit, optimizeCB, has, isSoboku, unique, identity, isCalc } from "./util";
+import { omit, optimizeCB, has, unique, identity, isCalc } from "./util";
 import { state } from "./state";
 import { dependency, mirror } from "./calc";
 import { spyOnAll } from "./helper/helper";
@@ -47,19 +47,6 @@ describe("util", () => {
         });
     });
     
-    describe("isSoboku", () => {
-        it("should return true if arguement is soboku", () => {
-            const s = state(0);
-            expect(isSoboku(s)).toBeTruthy();
-        });
-        it("should return false if argument is not soboku", () => {
-            const obj = { foo: "" };
-            expect(isSoboku(undefined)).toBeFalsy();
-            expect(isSoboku("Hello")).toBeFalsy();
-            expect(isSoboku(obj)).toBeFalsy();
-        });
-    });
-
     describe("unique", () => {
         it("should get unique values from array", () => {
             const source = [1, 2, 1, 3, 2, 1];
