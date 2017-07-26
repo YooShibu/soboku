@@ -23,7 +23,7 @@ export declare type Listener<T> = {
 }
 
 export function state<T>(initial: T): State<T>;
-export function on<T, L extends Listener<T>>(target: SobokuProp<T>, listener: L, emitFirstTime?: boolean): L;
+export function on<T, L extends Listener<T>>(target: SobokuProp<T>, listener: L): L;
 export function removeListener<T>(target: SobokuProp<T>, listener: Listener<T>): void;
 export function setState<T>(state: State<T>, currentState: T): T;
 export function getState<T>(soboku: Soboku<T>): T;
