@@ -2,14 +2,14 @@ import { Soboku, State, Calc, CalcProp, Listener, SobokuProp } from "../index.d"
 import { assignSobokuProp } from "./soboku";
 import { getState } from "./state";
 import { emitListeners, on } from "./event";
-import { optimizeCB, omit, has, unique, identity } from "./util";
+import { optimizeCB, omit, has, unique, identity, isCalc } from "./util";
 
 export function getDepends(sobokus: Soboku<any>[]): Soboku<any>[] {
     let result: Soboku<any>[] = [];
     for (let i = 0; sobokus.length > i; ++i) {
         const soboku = sobokus[i];
-        if (has(soboku, "_depends"))
-            result = result.concat((soboku as Calc<any>)._depends);
+        if (isCalc(soboku))
+            result = result.concat(soboku._depends);
         else
             result.push(soboku);
     }
