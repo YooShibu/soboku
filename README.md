@@ -39,20 +39,20 @@ setState(last, "Oda");
 
 ## API
 
-### `state(initial)`
-### `setState(state, currentState)`
-### `getState(soboku)`
-### `dependency(func, ...sobokus)`
-### `combine(sobokuObj)`
-### `mirror(state)`
-### `on(soboku, listener, emitFirstTime = true)`
-### `removeListener(soboku, listener)`
-### `isSoboku(value)`
+### `state<T>(initial: T): State<T>`
+### `setState<T>(state: State<T>, currentState: T): T`
+### `getState(soboku: Soboku<T>): T`
+### `dependency<T>(func: (...sobokus: Soboku<any>[]) => T, ...sobokus: Soboku<any>[]): Calc<T>`
+### `combine<T>(sobokuObj: { [K in keyof T]: Soboku<T[K]> }): Calc<T>`
+### `mirror<T>(state: State<T>): Calc<T>`
+### `on<T>(soboku: SobokuProp<T>, listener: (val: T) => void)`
+### `removeListener<T>(soboku: SobokuProp<T>, listener: (val: T) => void)`
+### `isSoboku(value: any): boolean`
 
 ## Top-Level API
 
-### `emitListener(sobokuprop, value)`
-### `assignSobokuProp(props)`
+### `emitListener<T>(prop: SobokuProp<T>, value: T): void`
+### `assignSobokuProp<T, U>(props: U): SobokuProp<T> & U`
 
 ## LICENSE
 MIT
