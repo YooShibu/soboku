@@ -1,5 +1,5 @@
 import { Listener } from "../index.d";
-import { getDepends, dependency, combineSoboku, combine, addCalcEmitterToDepends } from "./calc";
+import { getDepends, dependency, combineSoboku, combine, mirror, addCalcEmitterToDepends } from "./calc";
 import { state, getState, setState } from "./state";
 import { on } from "./event";
 import { optimizeCB } from "./util";
@@ -83,6 +83,20 @@ describe("calc", () => {
            const y = dependency(add, x, x);
            expect(x._listeners.length).toBe(1);
        }); 
+    });
+
+    describe("mirror", () => {
+        it("should convert State to Calc", () => {
+            const _x = state(0);
+            const x = mirror(_x);
+            const receiver = spyOnAll({ f() {} });
+            on(x, receiver.f);
+            setState(_x, 100);
+            setState(_x, 20);
+            expect(receiver.f).toHaveBeenCalledWith(100);
+            expect(receiver.f).toHaveBeenCalledWith(20);
+            expect(getState(x)).toBe(20);
+        });
     });
 
     describe("composit test", () => {

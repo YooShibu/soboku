@@ -1,8 +1,8 @@
-import { Soboku, Calc, CalcProp, Listener, SobokuProp } from "../index.d";
+import { Soboku, State, Calc, CalcProp, Listener, SobokuProp } from "../index.d";
 import { createSoboku } from "./soboku";
 import { getState } from "./state";
 import { emitListeners, on } from "./event";
-import { optimizeCB, omit, has, unique } from "./util";
+import { optimizeCB, omit, has, unique, identity } from "./util";
 
 export function getDepends(sobokus: Soboku<any>[]): Soboku<any>[] {
     let result: Soboku<any>[] = [];
@@ -33,6 +33,10 @@ export function combine<T>(sobokuObj: { [K in keyof T]: Soboku<T[K]>}): Calc<T> 
     });
     addCalcEmitterToDepends(soboku);
     return soboku;
+}
+
+export function mirror<T>(state: State<T>): Calc<T> {
+    return dependency(identity, state);
 }
 
 export function combineSoboku<T>(source: { [K in keyof T]: Soboku<T[K]>}): T {
