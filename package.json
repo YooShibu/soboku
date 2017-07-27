@@ -1,6 +1,6 @@
 {
   "name": "soboku",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "managing small state",
   "main": "dist/soboku.js",
   "dependencies": {},
