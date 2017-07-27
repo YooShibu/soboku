@@ -8,8 +8,8 @@ describe("event", () => {
     describe("emitListeners", () => {
         it("should pass the arguemnt to listeners", () => {
             const receivers = spyOnAll({ f1() {}, f2() {}, f3() {} });
-            const listeners = [receivers.f1, receivers.f2, receivers.f3];
-            emitListeners(listeners, "Hello");
+            const _listeners = [receivers.f1, receivers.f2, receivers.f3];
+            emitListeners({ _listeners, __soboku__: true }, "Hello");
             expect(receivers.f1).toHaveBeenCalledWith("Hello");
             expect(receivers.f2).toHaveBeenCalledWith("Hello");
             expect(receivers.f3).toHaveBeenCalledWith("Hello");

@@ -10,7 +10,7 @@ export function state<T> (initial: T): State<T> {
 
 export function setState<T>(soboku: State<T>, state: T): T {
     soboku._state = state;
-    emitListeners(soboku._listeners, state);
+    emitListeners(soboku, state);
     return state;
 }
 

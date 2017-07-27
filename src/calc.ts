@@ -50,7 +50,7 @@ export function addCalcEmitterToDepends<T>(calc: Calc<T>): void {
     const depends = calc._depends;
     const listeners = calc._listeners;
     const getter = calc._getter;
-    const listener = () => emitListeners(listeners, getter());
+    const listener = () => emitListeners(calc, getter());
     for (let i = 0; depends.length > i; ++i)
         on(depends[i], listener);
 }

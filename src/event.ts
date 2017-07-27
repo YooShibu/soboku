@@ -1,7 +1,8 @@
 import { Listener, SobokuProp } from "../index.d";
 import { getState } from "./state";
 
-export function emitListeners<T>(listeners: Listener<T>[], val: T) {
+export function emitListeners<T>(prop: SobokuProp<T>, val: T) {
+    const listeners = prop._listeners;
     for (let i = 0; listeners.length > i; ++i)
         listeners[i](val);
 }
