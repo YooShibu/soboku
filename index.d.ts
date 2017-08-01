@@ -26,7 +26,7 @@ export function state<T>(initial: T): State<T>;
 export function on<T, L extends Listener<T>>(target: SobokuProp<T>, listener: L): L;
 export function removeListener<T>(target: SobokuProp<T>, listener: Listener<T>): void;
 export function setState<T>(state: State<T>, currentState: T): T;
-export function getState<T>(soboku: Soboku<T>): T;
+export function getState<T>(soboku: T | Soboku<T>): T;
 export function combine<T>(source: { [K in keyof T]: Soboku<T[K]>}): Calc<T>;
 export function dependency<R, S1>(func: (arg1: S1) => R, s1: Soboku<S1>): Calc<R>;
 export function dependency<R, S1, S2>(func: (arg1: S1, arg2: S2) => R, s1: Soboku<S1>, s2: Soboku<S2>): Calc<R>;
