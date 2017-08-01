@@ -1,4 +1,4 @@
-import { omit, optimizeCB, has, unique, identity, isCalc } from "./util";
+import { omit, optimizeCB, has, unique, identity, isCalc, isState } from "./util";
 import { state } from "./state";
 import { dependency, mirror } from "./calc";
 import { spyOnAll } from "./helper/helper";
@@ -72,6 +72,17 @@ describe("util", () => {
         it("should return false if argument is State", () => {
             const a = state(0);
             expect(isCalc(a)).toBeFalsy();
+        });
+    });
+
+    describe("isState", () => {
+        it("should return true if argument is State", () => {
+            const a = state(0);
+            expect(isState(a)).toBeTruthy();
+        });
+        it("should return false if argument is not State", () => {
+            const a = mirror(state(0));
+            expect(isState(a)).toBeFalsy();
         });
     });
 

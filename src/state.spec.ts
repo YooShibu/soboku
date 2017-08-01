@@ -27,6 +27,9 @@ describe("state", () => {
                   person = combine({ firstName, lastName });
             expect(getState(person)).toEqual({ firstName: "", lastName: "" });
         });
+        it("should return argument if it is neither state nor calc", () => {
+            expect(getState(100)).toBe(100);
+        });
     });
 
     describe("setState", () => {

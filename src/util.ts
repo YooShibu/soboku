@@ -1,4 +1,4 @@
-import { SobokuProp, Calc, Soboku, Listener } from "../index.d";
+import { SobokuProp, State, Calc, Soboku, Listener } from "../index.d";
 import { getState } from "./state";
 import { on, emitListeners } from "./event";
 
@@ -45,6 +45,10 @@ export function identity<T>(x: T): T {
     return x;
 }
 
-export function isCalc<T>(x: Soboku<T>): x is Calc<T> {
-    return has(x, "_depends") && has(x, "_getter");
+export function isCalc<T>(x: any): x is Calc<T> {
+    return typeof x === "object" && has(x, "_depends") && has(x, "_getter");
+}
+
+export function isState<T>(x: any): x is State<T> {
+    return typeof x === "object" && has(x, "_state");
 }
