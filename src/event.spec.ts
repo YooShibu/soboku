@@ -1,10 +1,10 @@
-import { Stream } from "../index.d";
+import { Reporter } from "../index.d";
 import { stream } from "./soboku";
 import { spyOnAll } from "./helper/helper";
 
 
 describe("event", () => {
-    let r: { f1: () => any, f2: () => any }, g: Stream<string>;
+    let r: { f1: () => any, f2: () => any }, g: Reporter<string>;
     beforeEach(() => {
         r = spyOnAll({ f1() {}, f2() {} });
         g = stream();

@@ -1,4 +1,4 @@
-import { SObservable, Atom, Stream, State, StateHolder } from "../../index.d";
+import { SObservable, Atom, Reporter, State, StateHolder } from "../../index.d";
 import { convAtomToStateHolder, stream, state } from "../soboku";
 import { SobokuListenerClass } from "../events";
 import * as u from "../util";

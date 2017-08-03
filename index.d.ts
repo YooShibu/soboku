@@ -18,12 +18,12 @@ export interface StateHolder<T> {
     s(): T;
 }
 
-export type Stream<T> = SobokuEvents<T> & Progressable<T>;
+export type Reporter<T> = SobokuEvents<T> & Progressable<T>;
 export type State<T> = SobokuEvents<T> & Progressable<T> & StateHolder<T>;
 export type Calc<T> = SobokuEvents<T> & StateHolder<T>;
 export type Atom<T> = T | Calc<T>;
 
-export function stream<T>(): Stream<T>;
+export function reporter<T>(): Reporter<T>;
 export function state<T>(initial: T): State<T>;
 export function combine<T>(source: { [K in keyof T]: Atom<T[K]>}): Calc<T>;
 export function gate<T>(gatekeeper: StateHolder<boolean>, stream: SobokuEvents<T>): SobokuEvents<T>;
@@ -41,7 +41,7 @@ export function trigger(func: (...args: any[]) => boolean, ...states: Atom<any>[
 export function listener<T>(func: Listener<T>): SobokuListener<T>;
 
 export interface SObservable<I, O> {
-    readonly input: Stream<I>;
+    readonly input: Reporter<I>;
     readonly output: SobokuEvents<O>;
 }
 export interface SObservableWithError<I, O> extends SObservable<I, O> {

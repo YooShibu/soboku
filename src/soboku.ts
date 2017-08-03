@@ -1,4 +1,4 @@
-import { Atom, Calc, Stream, State, StateHolder, SobokuEvents } from "../index.d";
+import { Atom, Calc, Reporter, State, StateHolder, SobokuEvents } from "../index.d";
 import { SobokuEventsClass, SobokuListenerClass } from "./events";
 import * as u from "./util";
 
@@ -55,7 +55,7 @@ class GateClass<T> extends SobokuEventsClass<T> {
 }
 
 
-export function stream<T>(): Stream<T> {
+export function stream<T>(): Reporter<T> {
     return new StreamClass();
 }
 

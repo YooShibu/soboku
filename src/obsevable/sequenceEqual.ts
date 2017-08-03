@@ -1,4 +1,4 @@
-import { Stream, SObservable } from "../../index.d";
+import { Reporter, SObservable } from "../../index.d";
 import { stream } from "../soboku";
 import { SobokuListenerClass } from "../events";
 

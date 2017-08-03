@@ -1,5 +1,5 @@
 import { interval, timeout } from "./timer";
-import { Atom, Stream, SObservable, State } from "../../index.d";
+import { Atom, Reporter, SObservable, State } from "../../index.d";
 import { trigger } from "../calc/trigger";
 import { listener } from "../events";
 import { state } from "../soboku";
