@@ -1,4 +1,4 @@
-import { Listener, SobokuEvents, SobokuListener, UnListener } from "../index.d";
+import { Listener, IReporter, SobokuListener, UnListener } from "../index.d";
 import * as u from "./util";
 
 
@@ -42,7 +42,7 @@ export function listener<T>(cb: Listener<T>, thisArg?: any): SobokuListener<T> {
     return new SobokuListenerClass(cb, thisArg);
 }
 
-export abstract class SobokuEventsClass<T> implements SobokuEvents<T> {
+export abstract class SobokuReporterClass<T> implements IReporter<T> {
     private readonly listeners: SobokuListener<T>[] = [];
 
     protected emitListener(val: T): T {

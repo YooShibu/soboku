@@ -1,11 +1,11 @@
-import { Atom, Calc, Reporter, State, StateHolder, SobokuEvents } from "../index.d";
-import { SobokuEventsClass, SobokuListenerClass } from "./events";
+import { Atom, Calc, Reporter, State, StateHolder, IReporter } from "../index.d";
+import { SobokuReporterClass, SobokuListenerClass } from "./events";
 import * as u from "./util";
 
-export type Depends = { readonly depends: SobokuEventsClass<any>[] };
+export type Depends = { readonly depends: SobokuReporterClass<any>[] };
 
 
-class StreamClass<T> extends SobokuEventsClass<T> {
+class StreamClass<T> extends SobokuReporterClass<T> {
 
     public next(val: T) {
         return this.emitListener(val);
@@ -13,7 +13,7 @@ class StreamClass<T> extends SobokuEventsClass<T> {
     
 }
 
-class StateClass<T> extends SobokuEventsClass<T> {
+class StateClass<T> extends SobokuReporterClass<T> {
 
     constructor(private state: T) {
         super();
@@ -40,9 +40,9 @@ class StateHolderClass<T> implements StateHolder<T> {
     
 }
 
-class GateClass<T> extends SobokuEventsClass<T> {
+class GateClass<T> extends SobokuReporterClass<T> {
 
-    constructor(private readonly gatekeeper: StateHolder<boolean>, reporter: SobokuEvents<T>) {
+    constructor(private readonly gatekeeper: StateHolder<boolean>, reporter: IReporter<T>) {
         super();
         reporter.report(new SobokuListenerClass(this.listener, this));
     }
@@ -63,7 +63,7 @@ export function state<T>(initial: T): State<T> {
     return new StateClass(initial);
 }
 
-export function gate<T>(gatekeeper: StateHolder<boolean>, reporter: SobokuEvents<T>): SobokuEvents<T> {
+export function gate<T>(gatekeeper: StateHolder<boolean>, reporter: IReporter<T>): IReporter<T> {
     return new GateClass(gatekeeper, reporter);
 }
 

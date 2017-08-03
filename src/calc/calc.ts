@@ -1,11 +1,11 @@
 import { Atom, StateHolder } from "../../index.d";
 import { convAtomToStateHolder } from "../soboku";
-import { SobokuEventsClass, SobokuListenerClass } from "../events";
+import { SobokuReporterClass, SobokuListenerClass } from "../events";
 import * as u from "../util";
 
 
-function getDeps(atoms: Atom<any>[]): SobokuEventsClass<any>[] {
-    let result: SobokuEventsClass<any>[] = [];
+function getDeps(atoms: Atom<any>[]): SobokuReporterClass<any>[] {
+    let result: SobokuReporterClass<any>[] = [];
     for (let i = 0; atoms.length > i; ++i) {
         const atom = atoms[i];
         if(u.isDepends(atom)) {
@@ -21,8 +21,8 @@ export function getState<T>(sh: StateHolder<T>): T {
     return sh.s();
 }
 
-export abstract class CalcClass<T> extends SobokuEventsClass<T> {
-    private readonly depends: SobokuEventsClass<any>[];
+export abstract class CalcClass<T> extends SobokuReporterClass<T> {
+    private readonly depends: SobokuReporterClass<any>[];
 
     constructor(atoms: Atom<any>[]) {
         super();

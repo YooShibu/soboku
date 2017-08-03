@@ -1,14 +1,14 @@
-import { Reporter, SObservable, SObservableWithError, SobokuEvents } from "../../index.d";
-import { SobokuEventsClass } from "../events";
+import { Reporter, SObservable, SObservableWithError, IReporter } from "../../index.d";
+import { SobokuReporterClass } from "../events";
 
 
 export abstract class ObservableClass<I, O> implements SObservableWithError<I, O> {
     public abstract readonly input: Reporter<I>;
-    public abstract readonly output: SobokuEvents<O>;
+    public abstract readonly output: IReporter<O>;
     public readonly error = new ObservableErrorGate();
 }
 
-export class ObservableErrorGate extends SobokuEventsClass<Error> {
+export class ObservableErrorGate extends SobokuReporterClass<Error> {
 
     public next(err: Error) {
         if (this.listenerCount() === 0) {
