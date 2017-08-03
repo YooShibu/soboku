@@ -26,7 +26,11 @@ class UnListenerClass<T> implements UnListener {
 
 export class SobokuListenerClass<T> implements SobokuListener<T> {
 
-    constructor(private readonly listener: Listener<T>, private readonly thisArg?: any) {}
+    constructor(private readonly listener: Listener<T>, private readonly thisArg?: any) {
+        if (typeof listener !== "function") {
+            throw new TypeError("'listener' must be a function");
+        }
+    }
 
     public emit(val: T) {
         this.listener.call(this.thisArg, val);

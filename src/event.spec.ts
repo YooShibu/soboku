@@ -23,7 +23,7 @@ describe("event", () => {
         });
     });
 
-    describe("listen", () => {
+    describe("report", () => {
         it("should return unlistener", () => {
             const unlistener = g.report(r.f1);
             g.next("hello");
@@ -33,6 +33,10 @@ describe("event", () => {
 
             expect(r.f1).toHaveBeenCalledTimes(1);
             expect(r.f1).toHaveBeenCalledWith("hello");
+        });
+        it("should throw error if listener is not typeof function", () => {
+            expect(() => g.report(100 as any))
+                .toThrowError("'listener' must be a function");
         });
     });
 
