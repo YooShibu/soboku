@@ -35,7 +35,7 @@ export abstract class CalcClass<T> extends SobokuReporterClass<T> {
 
     public abstract s(): T;
     public listener(val: T): void {
-        this.emitListener(this.s());
+        this.tellNews(this.s());
     };
     
 }

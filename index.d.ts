@@ -1,6 +1,6 @@
 export type Listener<T> = (val: T) => void;
 export interface SobokuListener<T> {
-    emit(val: T): void;
+    gets(val: T): void;
 }
 export interface UnListener {
     unlisten(): void;

@@ -32,8 +32,8 @@ export class SobokuListenerClass<T> implements SobokuListener<T> {
         }
     }
 
-    public emit(val: T) {
-        this.listener.call(this.thisArg, val);
+    public gets(news: T) {
+        this.listener.call(this.thisArg, news);
     }
     
 }
@@ -45,10 +45,10 @@ export function listener<T>(cb: Listener<T>, thisArg?: any): SobokuListener<T> {
 export abstract class SobokuReporterClass<T> implements IReporter<T> {
     private readonly listeners: SobokuListener<T>[] = [];
 
-    protected emitListener(val: T): T {
+    protected tellNews(val: T): T {
         const listeners = this.listeners;
         for (let i = 0; listeners.length > i; ++i)
-            listeners[i].emit(val);
+            listeners[i].gets(val);
         return val;
     }
 

@@ -8,7 +8,7 @@ export type Depends = { readonly depends: SobokuReporterClass<any>[] };
 class StreamClass<T> extends SobokuReporterClass<T> {
 
     public next(val: T) {
-        return this.emitListener(val);
+        return this.tellNews(val);
     }
     
 }
@@ -21,7 +21,7 @@ class StateClass<T> extends SobokuReporterClass<T> {
 
     public next(val: T): T {
         this.state = val;
-        return this.emitListener(val);
+        return this.tellNews(val);
     }
 
     public s() {
@@ -49,7 +49,7 @@ class GateClass<T> extends SobokuReporterClass<T> {
 
     private listener(val: T): void {
         if (this.gatekeeper.s())
-            this.emitListener(val);
+            this.tellNews(val);
     }
     
 }
