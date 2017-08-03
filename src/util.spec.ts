@@ -1,15 +1,56 @@
-import { omit, optimizeCB, has, unique, identity, isCalc, isState } from "./util";
-import { state } from "./state";
-import { dependency, mirror } from "./calc";
-import { spyOnAll } from "./helper/helper";
+import * as u from "./util";
+import { gate, state } from "./soboku";
+import { dependency } from "./calc/dependency";
+import { spyOnAll, twice } from "./helper/helper";
 
 
 describe("util", () => {
 
-    describe("omit", () => {
-        it("should omit a key from object", () => {
-            const source = { foo1: "", foo2: "", foo3: "" };
-            expect(omit(source, "foo3")).toEqual({ foo1: "", foo2: "" } as any);
+    describe("has", () => {
+        it("should create function that object has property", () => {
+            interface Person {
+                firstName: string;
+                lastName: string;
+            }
+            const p: Partial<Person> = { firstName: "Jhon" };
+
+            expect(u.has(p, "firstName")).toBeTruthy();
+            expect(u.has(p, "lastName")).toBeFalsy();
+        });
+    });
+    
+    describe("identity", () => {
+        it("should return argument", () => {
+            const source = [1, 2, 3];
+            const result = u.identity(source);
+
+            expect(result).toBe(source);
+        });
+    });
+
+    describe("indexOf", () => {
+        const source = [1, 2, 3, 4, 2, 5];
+        it("should return first index if val contained in the array", () => {
+            const result = u.indexOf(source, 2);
+            expect(result).toBe(1);
+        });
+        it("should return -1 if array has no val", () => {
+            const result = u.indexOf(source, 100);
+            expect(result).toBe(-1);
+        });
+    });
+
+    describe("map", () => {
+        it("should call iteratee with each value in array", () => {
+            const result = u.map([1, 2, 3, 4], twice);
+            expect(result).toEqual([2, 4, 6, 8]);
+        });
+    });
+
+    describe("mapObj", () => {
+        it("should pass each value in obj to iteratee", () => {
+            const result = u.mapObj({ foo: 20, bar: 100 }, twice);
+            expect(result).toEqual({ foo: 40, bar: 200 });
         });
     });
 
@@ -21,11 +62,11 @@ describe("util", () => {
             const add4 = (x: number, y: number, z: number, a: number) => x + y + z + a;
             const sum = (...nums: number[]) => nums.reduce(add, 0);
 
-            const _twice = optimizeCB(twice);
-            const _add = optimizeCB(add);
-            const _add3 = optimizeCB(add3);
-            const _add4 = optimizeCB(add4);
-            const _sum = optimizeCB(sum);
+            const _twice = u.optimizeCB(twice);
+            const _add = u.optimizeCB(add);
+            const _add3 = u.optimizeCB(add3);
+            const _add4 = u.optimizeCB(add4);
+            const _sum = u.optimizeCB(sum);
             
             expect(_twice([4])).toBe(8);
             expect(_add([1, 2])).toBe(3);
@@ -35,55 +76,56 @@ describe("util", () => {
         });
     });
 
-    describe("has", () => {
-        it("should create function that object has property", () => {
-            interface Person {
-                firstName: string;
-                lastName: string;
-            }
-            const p: Partial<Person> = { firstName: "Jhon" };
-            expect(has(p, "firstName")).toBeTruthy();
-            expect(has(p, "lastName")).toBeFalsy();
+    describe("spliceOne", () => {
+        it("should remove val of index from array", () => {
+            const source1 = [1, 2, 3];
+            const source2 = [1, 2, 3];
+            const source3 = [1, 2, 3];
+            u.spliceOne(source1, 2);
+            u.spliceOne(source2, 1);
+            u.spliceOne(source3, 0);
+
+            expect(source1).toEqual([1, 2]);
+            expect(source2).toEqual([1, 3]);
+            expect(source3).toEqual([2, 3]);
+        });
+        it("should nothing to do if index is smaller than 0", () => {
+            const source = [1, 2, 3];
+            u.spliceOne(source, -1);
+            expect(source).toEqual([1, 2, 3]);
         });
     });
-    
+
     describe("unique", () => {
         it("should get unique values from array", () => {
             const source = [1, 2, 1, 3, 2, 1];
-            const result = unique(source).sort();
+            const result = u.unique(source).sort();
+
             expect(result).toEqual([1, 2, 3]);
         });
     });
 
-    describe("identity", () => {
-        it("should return argument", () => {
-            const source = [1, 2, 3];
-            const result = identity(source);
-            expect(result).toBe(source);
+    describe("isSobokuEvent", () => {
+        it("should return true if argument is instance of SobokuEventClass", () => {
+            expect(u.isSobokuEvent(state(100))).toBeTruthy();
+            expect(u.isSobokuEvent(undefined)).toBeFalsy();
         });
     });
 
-    describe("isCalc", () => {
-        it("should return true if arguemnt is Calc", () => {
-            const a = state(0);
-            const b = mirror(a);
-            expect(isCalc(b)).toBeTruthy();
-        });
-        it("should return false if argument is State", () => {
-            const a = state(0);
-            expect(isCalc(a)).toBeFalsy();
+    describe("isStateHolder", () => {
+        it("should return true if argument is object and has 's' key", () => {
+            expect(u.isStateHolder(state(100))).toBeTruthy();
+            expect(u.isStateHolder(gate())).toBeFalsy();
         });
     });
 
-    describe("isState", () => {
-        it("should return true if argument is State", () => {
-            const a = state(0);
-            expect(isState(a)).toBeTruthy();
-        });
-        it("should return false if argument is not State", () => {
-            const a = mirror(state(0));
-            expect(isState(a)).toBeFalsy();
-        });
+    describe("isDepends", () => {
+       it("should return true if argument is Depends", () => {
+           const s = state(10);
+           const d = dependency(twice, s);
+           expect(u.isDepends(d)).toBeTruthy();
+           expect(u.isDepends(s)).toBeFalsy();
+       }); 
     });
 
 });

@@ -1,44 +1,49 @@
-import { emitListeners, on, removeListener } from "./event";
-import { state } from "./state";
+import { Gate } from "../index.d";
+import { gate } from "./soboku";
 import { spyOnAll } from "./helper/helper";
 
 
 describe("event", () => {
-
+    let r: { f1: () => any, f2: () => any }, g: Gate<string>;
+    beforeEach(() => {
+        r = spyOnAll({ f1() {}, f2() {} });
+        g = gate();
+    });
+    
     describe("emitListeners", () => {
         it("should pass the arguemnt to listeners", () => {
-            const receivers = spyOnAll({ f1() {}, f2() {}, f3() {} });
-            const _listeners = [receivers.f1, receivers.f2, receivers.f3];
-            emitListeners({ _listeners, __soboku__: true }, "Hello");
-            expect(receivers.f1).toHaveBeenCalledWith("Hello");
-            expect(receivers.f2).toHaveBeenCalledWith("Hello");
-            expect(receivers.f3).toHaveBeenCalledWith("Hello");
+            g.report(r.f1);
+            g.report(r.f2);
+            g.next("hello");
+
+            expect(r.f1).toHaveBeenCalledTimes(1);
+            expect(r.f1).toHaveBeenCalledWith("hello");
+            expect(r.f2).toHaveBeenCalledTimes(1);
+            expect(r.f2).toHaveBeenCalledWith("hello");
         });
     });
 
-    describe("on", () => {
-        it("should add listener to the listeners", () => {
-            const str = state("STRING");
-            const receivers = spyOnAll({ f() {} });
-            on(str, receivers.f);
-            expect(str._listeners.length).toBe(1);
-            expect(receivers.f).toHaveBeenCalledTimes(0);
-        });
+    describe("listen", () => {
+        it("should return unlistener", () => {
+            const unlistener = g.report(r.f1);
+            g.next("hello");
+            unlistener.unlisten();
+            unlistener.unlisten();
+            g.next("good bye");
 
-        it("should return listener", () => {
-            const str = state("STRING");
-            const listener = (s: string) => {};
-            expect(on(str, listener)).toBe(listener);
+            expect(r.f1).toHaveBeenCalledTimes(1);
+            expect(r.f1).toHaveBeenCalledWith("hello");
+        });
+    });
+
+    describe("listenerCount", () => {
+        it("should return listener count", () => {
+            expect(g.listenerCount()).toBe(0);
+            const unlistener = g.report(r.f1);
+            expect(g.listenerCount()).toBe(1);
+            unlistener.unlisten();
+            expect(g.listenerCount()).toBe(0);
         });
     });
     
-    describe("removeListener", () => {
-        it("should remove listener from soboku", () => {
-            const str = state("");
-            const listener = on(str, (s: string) => {});
-            expect(str._listeners.length).toBe(1);
-            removeListener(str, listener);
-            expect(str._listeners.length).toBe(0);
-        });
-    });
 });

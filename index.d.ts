@@ -1,40 +1,52 @@
-export interface SobokuProp<T> {
-    readonly _listeners:((state: T) => void)[];
-    readonly __soboku__: true;
+export type Listener<T> = (val: T) => void;
+export interface SobokuListener<T> {
+    emit(val: T): void;
+}
+export interface UnListener {
+    unlisten(): void;
+}
+export interface SobokuEvents<T> {
+    report(listener: Listener<T> | SobokuListener<T>): UnListener;
+    listenerCount(): number;
 }
 
-export interface StateProp<T> {
-    _state: T;
+export interface Progressable<T> {
+    next(val: T): T;
 }
 
-export type State<T> = SobokuProp<T> & StateProp<T>;
-
-export interface CalcProp<T> {
-    readonly _getter: () => T;
-    readonly _depends: Soboku<any>[];
+export interface StateHolder<T> {
+    s(): T;
 }
 
-export type Calc<T> = SobokuProp<T> & CalcProp<T>;
+export type Gate<T> = SobokuEvents<T> & Progressable<T>;
+export type State<T> = SobokuEvents<T> & Progressable<T> & StateHolder<T>;
+export type Calc<T> = SobokuEvents<T> & StateHolder<T>;
+export type Atom<T> = T | Calc<T>;
 
-export type Soboku<T> = State<T> | Calc<T>;
-
-export declare type Listener<T> = {
-    (state: T): any;
-}
-
+export function gate<T>(): Gate<T>;
 export function state<T>(initial: T): State<T>;
-export function on<T, L extends Listener<T>>(target: SobokuProp<T>, listener: L): L;
-export function removeListener<T>(target: SobokuProp<T>, listener: Listener<T>): void;
-export function setState<T>(state: State<T>, currentState: T): T;
-export function getState<T>(soboku: T | Soboku<T>): T;
-export function combine<T>(source: { [K in keyof T]: Soboku<T[K]>}): Calc<T>;
-export function dependency<R, S1>(func: (arg1: S1) => R, s1: Soboku<S1>): Calc<R>;
-export function dependency<R, S1, S2>(func: (arg1: S1, arg2: S2) => R, s1: Soboku<S1>, s2: Soboku<S2>): Calc<R>;
-export function dependency<R, S1, S2, S3>(func: (arg1: S1, arg2: S2, arg3: S3) => R, s1: Soboku<S1>, s2: Soboku<S2>, s3: Soboku<S3>): Calc<R>;
-export function dependency<R, S1, S2, S3, S4>(func: (arg1: S1, arg2: S2, arg3: S3, arg4: S4) => R, s1: Soboku<S1>, s2: Soboku<S2>, s3: Soboku<S3>, s4: Soboku<S4>): Calc<R>;
-export function dependency<R>(func: (...args: any[]) => R, ...states: Soboku<any>[]): Calc<R>
-export function mirror<T>(state: State<T>): Calc<T>;
+export function combine<T>(source: { [K in keyof T]: Atom<T[K]>}): Calc<T>;
+export function listener<T>(func: Listener<T>): SobokuListener<T>;
+export function dependency<R, A1>(func: (arg1: A1) => R, a1: Atom<A1>): Calc<R>;
+export function dependency<R, A1, A2>(func: (arg1: A1, arg2: A2) => R, a1: Atom<A1>, a2: Atom<A2>): Calc<R>;
+export function dependency<R, A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3) => R, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>): Calc<R>;
+export function dependency<R, A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => R, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>, a4: Atom<A4>): Calc<R>;
+export function dependency<R>(func: (...args: any[]) => R, ...states: Atom<any>[]): Calc<R>
+export function trigger<A1>(func: (arg1: A1) => boolean, a1: Atom<A1>): Calc<boolean>;
+export function trigger<A1, A2>(func: (arg1: A1, arg2: A2) => boolean, a1: Atom<A1>, a2: Atom<A2>): Calc<boolean>;
+export function trigger<A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3) => boolean, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>): Calc<boolean>;
+export function trigger<A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => boolean, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>, a4: Atom<A4>): Calc<boolean>;
+export function trigger(func: (...args: any[]) => boolean, ...states: Atom<any>[]): Calc<boolean>
 
-export function emitListeners<T>(prop: SobokuProp<T>, val: T): void;
-export function getSobokuProp<T>(): SobokuProp<T>;
-export function assignSobokuProp<T, U>(props: U): SobokuProp<T> & U;
+
+export interface Observable<I extends SobokuEvents<any>, O> {
+    readonly error: SobokuEvents<Error>;
+    readonly output: SobokuEvents<O>;
+    readonly input: I;
+}
+export class UnhandledObservableError extends Error {
+    constructor(err: Error)
+}
+
+export function interval(ms: Atom<number>): Observable<State<boolean>, number>;
+export function timeout(ms: Atom<number>): Observable<State<boolean>, number>;

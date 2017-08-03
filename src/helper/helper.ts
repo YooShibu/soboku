@@ -7,3 +7,7 @@ export function spyOnAll<T>(obj: T): T {
 export function add(x: number, y: number): number {
     return x + y;
 }
+
+export function twice(x: number): number {
+    return x * 2;
+}

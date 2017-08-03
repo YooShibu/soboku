@@ -1,6 +1,6 @@
-import { SobokuProp, State, Calc, Soboku, Listener } from "../index.d";
-import { getState } from "./state";
-import { on, emitListeners } from "./event";
+import { StateHolder, SobokuListener } from "../index.d";
+import { Depends } from "./soboku";
+import { SobokuEventsClass, SobokuListenerClass } from "./events";
 
 
 export function optimizeCB<T>(func: (...args: any[]) => T): (args: any[]) => T {
@@ -18,14 +18,6 @@ export function optimizeCB<T>(func: (...args: any[]) => T): (args: any[]) => T {
     }
 }
 
-export function omit<T>(obj: T, key: keyof T): T {
-    const result = {} as T;
-    for (let _key in obj)
-        if (_key !== key)
-            result[_key] = obj[_key];
-    return result;
-}
-
 export function has(obj: object, key: string): boolean {
     return Object.prototype.hasOwnProperty.call(obj, key);
 }
@@ -34,7 +26,7 @@ export function unique<T>(arr: T[]): T[] {
     const result: T[] = [];
     for (let i = 0; arr.length > i; ++i) {
         const val = arr[i];
-        if (result.indexOf(val) === -1) {
+        if (indexOf(result, val) === -1) {
             result.push(val);
         }
     }
@@ -45,10 +37,53 @@ export function identity<T>(x: T): T {
     return x;
 }
 
-export function isCalc<T>(x: any): x is Calc<T> {
-    return typeof x === "object" && has(x, "_depends") && has(x, "_getter");
+export function indexOf<T>(arr: T[], val: T): number {
+    for (let i = 0; arr.length > i; ++i) {
+        if (arr[i] === val) {
+            return i;
+        }
+    }
+    return -1;
 }
 
-export function isState<T>(x: any): x is State<T> {
-    return typeof x === "object" && has(x, "_state");
+export function spliceOne<T>(arr: T[], index: number): void {
+    if (0 > index) {
+        return;
+    }
+    for (let i = index, j = index + 1; arr.length > j; ++i, ++j) {
+        arr[i] = arr[j];
+    }
+    arr.pop();
+}
+
+export function map<T, U>(arr: T[], iteratee: (val: T) => U): U[] {
+    const result: U[] = [];
+    for (let i = 0; arr.length > i; ++i) {
+        result.push(iteratee(arr[i]));
+    }
+    return result;
+}
+
+export function mapObj<T extends { [key: string]: any }, U extends { [key: string]: any }>(obj: T, iteratee: <K1 extends keyof T, K2 extends keyof U>(val: T[K1]) => U[K2]): U {
+    const result: { [key: string]: any } = {};
+    for (let key in obj) {
+        result[key] = iteratee(obj[key]);
+    }
+    return result as U;
+}
+
+export function isSobokuEvent(x: any): x is SobokuEventsClass<any> {
+    return typeof x === "object" && x instanceof SobokuEventsClass;
+}
+
+export function isStateHolder(x: any): x is StateHolder<any> {
+    return typeof x === "object"  && typeof x.s === "function";
+}
+
+export function isDepends(x: any): x is Depends {
+    return isSobokuEvent(x) && has(x, "depends");
+}
+
+export function isSobokuListener<T>(x: any): x is SobokuListener<T> {
+    return x instanceof SobokuListenerClass;
 }
