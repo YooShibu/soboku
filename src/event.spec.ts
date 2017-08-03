@@ -1,13 +1,13 @@
-import { Gate } from "../index.d";
-import { gate } from "./soboku";
+import { Stream } from "../index.d";
+import { stream } from "./soboku";
 import { spyOnAll } from "./helper/helper";
 
 
 describe("event", () => {
-    let r: { f1: () => any, f2: () => any }, g: Gate<string>;
+    let r: { f1: () => any, f2: () => any }, g: Stream<string>;
     beforeEach(() => {
         r = spyOnAll({ f1() {}, f2() {} });
-        g = gate();
+        g = stream();
     });
     
     describe("emitListeners", () => {

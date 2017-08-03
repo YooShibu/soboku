@@ -1,4 +1,4 @@
-export { gate, state } from "./soboku"
+export { stream, state } from "./soboku"
 export { listener } from "./events"
 export { combine } from "./calc/combine"
 export { dependency } from "./calc/dependency"

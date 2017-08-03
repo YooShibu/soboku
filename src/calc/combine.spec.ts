@@ -1,6 +1,6 @@
 import { combine } from "./combine";
 import { dependency } from "./dependency";
-import { state, gate } from "../soboku";
+import { state, stream } from "../soboku";
 import { spyOnAll } from "../helper/helper";
 
 

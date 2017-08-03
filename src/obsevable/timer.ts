@@ -1,20 +1,18 @@
-import { Observable, Atom, Gate, State, StateHolder } from "../../index.d";
-import { convAtomToStateHolder, gate, state } from "../soboku";
+import { SObservable, Atom, Stream, State, StateHolder } from "../../index.d";
+import { convAtomToStateHolder, stream, state } from "../soboku";
 import { SobokuListenerClass } from "../events";
 import * as u from "../util";
-import { ObservableClass } from "./observable";
 
 
-abstract class TimerObservable extends ObservableClass<State<boolean>, number> {
-    public readonly input = state(false);
-    public readonly output = gate<number>();
+abstract class TimerObservable implements SObservable<boolean, number> {
+    public readonly input = stream<boolean>();
+    public readonly output = stream<number>();
     protected readonly cb = () => this.output.next(Date.now());
     protected readonly ms: StateHolder<number>;
     protected timer: NodeJS.Timer;
     protected isEmitting = false;
 
     constructor(ms: Atom<number>) {
-        super();
         const _ms = this.ms = convAtomToStateHolder(ms);
         this.input.report(new SobokuListenerClass(this.fireTimer, this));
         if (u.isSobokuEvent(_ms))
@@ -62,10 +60,10 @@ class TimeoutObservable extends TimerObservable {
 }
 
 
-export function interval(ms: Atom<number>): Observable<State<boolean>, number> {
+export function interval(ms: Atom<number>): SObservable<boolean, number> {
     return new IntervalObservable(ms);
 }
 
-export function timeout(ms: Atom<number>): Observable<State<boolean>, number> {
+export function timeout(ms: Atom<number>): SObservable<boolean, number> {
     return new TimeoutObservable(ms);
 }

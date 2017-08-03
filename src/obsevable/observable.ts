@@ -1,10 +1,9 @@
-import { Observable, SobokuEvents } from "../../index.d";
-import { gate } from "../soboku";
+import { Stream, SObservable, SObservableWithError, SobokuEvents } from "../../index.d";
 import { SobokuEventsClass } from "../events";
 
 
-export abstract class ObservableClass<I extends SobokuEvents<any>, O> implements Observable<I, O> {
-    public abstract readonly input: I;
+export abstract class ObservableClass<I, O> implements SObservableWithError<I, O> {
+    public abstract readonly input: Stream<I>;
     public abstract readonly output: SobokuEvents<O>;
     public readonly error = new ObservableErrorGate();
 }

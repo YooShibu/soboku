@@ -1,5 +1,5 @@
 import * as u from "./util";
-import { gate, state } from "./soboku";
+import { stream, state } from "./soboku";
 import { dependency } from "./calc/dependency";
 import { spyOnAll, twice } from "./helper/helper";
 
@@ -115,7 +115,7 @@ describe("util", () => {
     describe("isStateHolder", () => {
         it("should return true if argument is object and has 's' key", () => {
             expect(u.isStateHolder(state(100))).toBeTruthy();
-            expect(u.isStateHolder(gate())).toBeFalsy();
+            expect(u.isStateHolder(stream())).toBeFalsy();
         });
     });
 

@@ -1,5 +1,5 @@
 import { interval, timeout } from "./timer";
-import { Atom, Gate, Observable, State } from "../../index.d";
+import { Atom, Stream, SObservable, State } from "../../index.d";
 import { trigger } from "../calc/trigger";
 import { listener } from "../events";
 import { state } from "../soboku";
@@ -8,10 +8,10 @@ class Counter<T extends number | State<number>> {
     private readonly count = state(0);
     public readonly isEnd = trigger(c => c === this.times, this.count);
     public readonly ms: T;
-    public readonly timer: Observable<State<boolean>, number>;
+    public readonly timer: SObservable<boolean, number>;
     private readonly times: number;
 
-    constructor(ms: T, times: number, timer: (ms: Atom<number>) => Observable<State<boolean>, number>) {
+    constructor(ms: T, times: number, timer: (ms: Atom<number>) => SObservable<boolean, number>) {
         this.ms = ms;
         this.times = times;
         this.timer = timer(ms);
