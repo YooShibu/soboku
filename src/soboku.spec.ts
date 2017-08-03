@@ -1,4 +1,4 @@
-import { stream, state, gate } from "./soboku";
+import { reporter, state, gate } from "./soboku";
 import { IDefaultSpy, defaultSpy } from "./helper/helper";
 
 
@@ -8,7 +8,7 @@ describe("soboku", () => {
     
     describe("stream", () => {
         it("should emit listeners when next emitted", () => {
-            const message = stream<string>();
+            const message = reporter<string>();
             message.report(r.f);
             message.next("Hello");
 
@@ -39,7 +39,7 @@ describe("soboku", () => {
 
     describe("gate", () => {
         it("should emit listeners when reporter reports and gatekeeper is true", () => {
-            const Biff = stream<string>();
+            const Biff = reporter<string>();
             const earplug = state(false);
             const Marty = gate(earplug, Biff);
             Marty.report(r.f);

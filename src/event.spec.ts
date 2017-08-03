@@ -1,5 +1,5 @@
 import { Reporter } from "../index.d";
-import { stream } from "./soboku";
+import { reporter } from "./soboku";
 import { spyOnAll } from "./helper/helper";
 
 
@@ -7,7 +7,7 @@ describe("event", () => {
     let r: { f1: () => any, f2: () => any }, g: Reporter<string>;
     beforeEach(() => {
         r = spyOnAll({ f1() {}, f2() {} });
-        g = stream();
+        g = reporter();
     });
     
     describe("emitListeners", () => {

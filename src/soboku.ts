@@ -5,7 +5,7 @@ import * as u from "./util";
 export type Depends = { readonly depends: SobokuReporterClass<any>[] };
 
 
-class StreamClass<T> extends SobokuReporterClass<T> {
+class ReporterClass<T> extends SobokuReporterClass<T> {
 
     public next(val: T) {
         return this.tellNews(val);
@@ -54,9 +54,8 @@ class GateClass<T> extends SobokuReporterClass<T> {
     
 }
 
-
-export function stream<T>(): Reporter<T> {
-    return new StreamClass();
+export function reporter<T>(): Reporter<T> {
+    return new ReporterClass();
 }
 
 export function state<T>(initial: T): State<T> {

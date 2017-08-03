@@ -1,5 +1,5 @@
 import { Reporter, SObservable } from "../../index.d";
-import { stream } from "../soboku";
+import { reporter } from "../soboku";
 import { SobokuListenerClass } from "../events";
 
 
@@ -8,8 +8,8 @@ function isEqual(x: any, y: any): boolean {
 }
 
 class SequenceEqualClass<T> implements SObservable<T, true> {
-    public readonly input = stream<T>();
-    public readonly output = stream<true>();
+    public readonly input = reporter<T>();
+    public readonly output = reporter<true>();
     private readonly compare: (x: any, y: any) => boolean;
     private readonly sequence: T[];
     private i = 0;
