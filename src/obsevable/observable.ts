@@ -14,7 +14,7 @@ export class ObservableErrorGate extends SobokuReporterClass<Error> {
         if (this.listenerCount() === 0) {
             throw new UnhandledObservableError(err);
         }
-        this.next(err);
+        return super.next(err);
     }
     
 }

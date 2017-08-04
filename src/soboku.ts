@@ -1,11 +1,11 @@
-import { Atom, Calc, Listener, IReporter, Reporter, SobokuArray, SobokuListener, State, StateHolder, UnListener } from "../index.d";
+import { Atom, Calc, Listener, IReporter, Progressable, Reporter, SobokuArray, SobokuListener, State, StateHolder, UnListener } from "../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "./events";
 import * as u from "./util";
 
 export type Depends = { readonly depends: SobokuReporterClass<any>[] };
 
 
-class StateClass<T> extends SobokuReporterClass<T> {
+class StateClass<T> extends SobokuReporterClass<T> implements Progressable<T> {
 
     constructor(private state: T) {
         super();
@@ -13,7 +13,7 @@ class StateClass<T> extends SobokuReporterClass<T> {
 
     public next(val: T): T {
         this.state = val;
-        return this.next(val);
+        return super.next(val);
     }
 
     public s() {
@@ -40,25 +40,18 @@ class GateClass<T> extends SobokuReporterClass<T> {
     }
 
     private listener(val: T): void {
-        if (this.gatekeeper.s())
+        if (this.gatekeeper.s()) {
             this.next(val);
+        }
     }
     
 }
 
 class SobokuArrayClass<T> extends Array<T> implements SobokuArray<T> {
-    private readonly r = new SobokuReporterClass<T[]>();
+    public readonly r = new SobokuReporterClass<T[]>();
         
     public s(): T[] {
         return this;
-    }
-
-    public report(listener: Listener<T[]> | SobokuListener<T[]>): UnListener {
-        return this.r.report(listener);
-    }
-
-    public listenerCount(): number {
-        return this.r.listenerCount();
     }
 
     public pop(): T | undefined {
