@@ -80,7 +80,7 @@ describe("timer", () => {
             timer.input.next(true);
         });
         it("should restart timeout wihle emitting and input.next gets true", done => {
-            const { isEnd, timer } = new Counter(30, 1, timeout);
+            const { isEnd, timer } = new Counter(40, 1, timeout);
             isEnd.report(() => {
                 expect(Date.now() - now).toBeGreaterThanOrEqual(50);
                 done();
