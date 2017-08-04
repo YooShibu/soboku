@@ -56,12 +56,6 @@ export interface SObservable<I, O> {
     readonly input: Reporter<I>;
     readonly output: IReporter<O>;
 }
-export interface SObservableWithError<I, O> extends SObservable<I, O> {
-    readonly error: IReporter<Error>;
-}
-export class UnhandledSObservableError extends Error {
-    constructor(err: Error)
-}
 
 export function interval(ms: Atom<number>): SObservable<boolean, number>;
 export function timeout(ms: Atom<number>): SObservable<boolean, number>;
