@@ -1,4 +1,4 @@
-import { Atom, Calc, Listener, IReporter, IProgressable, Reporter, SobokuArray, ISobokuListener, State, IStateHolder, IUnListener } from "../index.d";
+import { Atom, Calc, Listener, IReporter, IProgressable, Reporter, ISobokuArray, ISobokuListener, State, IStateHolder, IUnListener } from "../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "./reporter";
 import * as u from "./util";
 
@@ -47,57 +47,6 @@ class GateClass<T> extends SobokuReporterClass<T> {
     
 }
 
-class SobokuArrayClass<T> extends Array<T> implements SobokuArray<T> {
-    public readonly r = new SobokuReporterClass<T[]>();
-        
-    public s(): T[] {
-        return this;
-    }
-
-    public pop(): T | undefined {
-        const result = super.pop();
-        this.r.next(this);
-        return result;
-    }
-
-    public push(): number {
-        const i = super.push.apply(this, arguments);
-        this.r.next(this);
-        return i;
-    }
-
-    public reverse(): this {
-        super.reverse();
-        this.r.next(this);
-        return this;
-    }
-
-    public shift(): T | undefined {
-        const result = super.shift();
-        this.r.next(this);
-        return result;
-    }
-
-    public sort(compareFn?: (a: T, b: T) => number): this {
-        super.sort(compareFn);
-        this.r.next(this);
-        return this;
-    }
-    
-    public splice(): this {
-        super.splice.apply(this, arguments);
-        this.r.next(this);
-        return this;
-    }
-
-    public unshift(): number {
-        const result = super.unshift.apply(this, arguments);
-        this.r.next(this);
-        return result;
-    }
-
-}
-
 export function reporter<T>(): Reporter<T> {
     return new SobokuReporterClass();
 }
@@ -108,12 +57,6 @@ export function state<T>(initial: T): State<T> {
 
 export function gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>): IReporter<T> {
     return new GateClass(gatekeeper, reporter);
-}
-
-export function sarray<T>(array?: T[]): SobokuArray<T> {
-    if (array == undefined)
-        return new SobokuArrayClass<T>();
-    return new SobokuArrayClass<T>().concat(array) as SobokuArray<T>;
 }
 
 export function convAtomToStateHolder<T>(atom: Atom<T>): IStateHolder<T> {
