@@ -1,4 +1,4 @@
-import { Atom, Calc, StateHolder } from "../../index.d";
+import { Atom, Calc, IStateHolder } from "../../index.d";
 import * as u from "../util";
 import { CalcFuncClass, getState } from "./calc";
 

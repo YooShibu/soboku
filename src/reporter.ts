@@ -1,12 +1,12 @@
-import { Listener, IReporter, SobokuListener, UnListener } from "../index.d";
+import { Listener, IReporter, ISobokuListener, IUnListener } from "../index.d";
 import * as u from "./util";
 
 
-class UnListenerClass<T> implements UnListener {
-    private listeners: SobokuListener<any>[] | null;
-    private listener: SobokuListener<T> | null;
+class UnListenerClass<T> implements IUnListener {
+    private listeners: ISobokuListener<any>[] | null;
+    private listener: ISobokuListener<T> | null;
     
-    constructor(listeners: SobokuListener<any>[], listener: SobokuListener<T>) {
+    constructor(listeners: ISobokuListener<any>[], listener: ISobokuListener<T>) {
         this.listeners = listeners;
         this.listener = listener;
     }
@@ -24,7 +24,7 @@ class UnListenerClass<T> implements UnListener {
     
 }
 
-export class SobokuListenerClass<T> implements SobokuListener<T> {
+export class SobokuListenerClass<T> implements ISobokuListener<T> {
 
     constructor(private readonly listener: Listener<T>, private readonly thisArg?: any) {
         if (typeof listener !== "function") {
@@ -38,12 +38,12 @@ export class SobokuListenerClass<T> implements SobokuListener<T> {
     
 }
 
-export function listener<T>(cb: Listener<T>, thisArg?: any): SobokuListener<T> {
+export function listener<T>(cb: Listener<T>, thisArg?: any): ISobokuListener<T> {
     return new SobokuListenerClass(cb, thisArg);
 }
 
 export class SobokuReporterClass<T> implements IReporter<T> {
-    private readonly listeners: SobokuListener<T>[] = [];
+    private readonly listeners: ISobokuListener<T>[] = [];
 
     public next(val: T): T {
         const listeners = this.listeners;
@@ -52,7 +52,7 @@ export class SobokuReporterClass<T> implements IReporter<T> {
         return val;
     }
 
-    public report(listener: Listener<T> | SobokuListener<T>): UnListener {
+    public report(listener: Listener<T> | ISobokuListener<T>): IUnListener {
         const _listener = u.isSobokuListener(listener)
             ? listener
             : new SobokuListenerClass(listener);

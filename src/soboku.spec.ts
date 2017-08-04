@@ -65,9 +65,9 @@ describe("soboku", () => {
             const arr = sarray([1, 2, 3]);
             arr.r.report(r.f);
             arr.pop();
-            console.log(Object.prototype.toString.call(arr));
+
             expect(r.f).toHaveBeenCalledTimes(1);
-            expect(r.f).toHaveBeenCalledWith([1, 2]);
+            
         });
     });
     

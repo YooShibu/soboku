@@ -1,4 +1,4 @@
-import { Atom, StateHolder } from "../../index.d";
+import { Atom, IStateHolder } from "../../index.d";
 import { convAtomToStateHolder } from "../soboku";
 import { SobokuReporterClass, SobokuListenerClass } from "../reporter";
 import * as u from "../util";
@@ -17,7 +17,7 @@ function getDeps(atoms: Atom<any>[]): SobokuReporterClass<any>[] {
     return u.unique(result);
 }
 
-export function getState<T>(sh: StateHolder<T>): T {
+export function getState<T>(sh: IStateHolder<T>): T {
     return sh.s();
 }
 
@@ -42,7 +42,7 @@ export abstract class CalcClass<T> extends SobokuReporterClass<T> {
 
 export abstract class CalcFuncClass<T> extends CalcClass<T> {
     private readonly func: (args: any[]) => T;
-    private readonly states: StateHolder<any>[];
+    private readonly states: IStateHolder<any>[];
 
     constructor(atoms: Atom<any>[], func: (...args: any[]) => T) {
         super(atoms);

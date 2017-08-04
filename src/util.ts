@@ -1,4 +1,4 @@
-import { StateHolder, SobokuListener } from "../index.d";
+import { IStateHolder, ISobokuListener } from "../index.d";
 import { Depends } from "./soboku";
 import { SobokuReporterClass, SobokuListenerClass } from "./reporter";
 
@@ -76,7 +76,7 @@ export function isSobokuEvent(x: any): x is SobokuReporterClass<any> {
     return typeof x === "object" && x instanceof SobokuReporterClass;
 }
 
-export function isStateHolder(x: any): x is StateHolder<any> {
+export function isStateHolder(x: any): x is IStateHolder<any> {
     return typeof x === "object"  && typeof x.s === "function";
 }
 
@@ -84,6 +84,6 @@ export function isDepends(x: any): x is Depends {
     return isSobokuEvent(x) && has(x, "depends");
 }
 
-export function isSobokuListener<T>(x: any): x is SobokuListener<T> {
+export function isSobokuListener<T>(x: any): x is ISobokuListener<T> {
     return x instanceof SobokuListenerClass;
 }

@@ -1,4 +1,4 @@
-import { SObservable, Atom, Reporter, State, StateHolder } from "../../index.d";
+import { SObservable, Atom, Reporter, State, IStateHolder } from "../../index.d";
 import { convAtomToStateHolder, reporter, state } from "../soboku";
 import { SobokuListenerClass } from "../reporter";
 import * as u from "../util";
@@ -8,7 +8,7 @@ abstract class TimerObservable implements SObservable<boolean, number> {
     public readonly input = reporter<boolean>();
     public readonly output = reporter<number>();
     protected readonly cb = () => this.output.next(Date.now());
-    protected readonly ms: StateHolder<number>;
+    protected readonly ms: IStateHolder<number>;
     protected timer: NodeJS.Timer;
     protected isEmitting = false;
 

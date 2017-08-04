@@ -1,11 +1,11 @@
-import { Atom, Calc, Listener, IReporter, Progressable, Reporter, SobokuArray, SobokuListener, State, StateHolder, UnListener } from "../index.d";
+import { Atom, Calc, Listener, IReporter, IProgressable, Reporter, SobokuArray, ISobokuListener, State, IStateHolder, IUnListener } from "../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "./reporter";
 import * as u from "./util";
 
 export type Depends = { readonly depends: SobokuReporterClass<any>[] };
 
 
-class StateClass<T> extends SobokuReporterClass<T> implements Progressable<T> {
+class StateClass<T> extends SobokuReporterClass<T> implements IProgressable<T> {
 
     constructor(private state: T) {
         super();
@@ -22,7 +22,7 @@ class StateClass<T> extends SobokuReporterClass<T> implements Progressable<T> {
     
 }
 
-class StateHolderClass<T> implements StateHolder<T> {
+class StateHolderClass<T> implements IStateHolder<T> {
 
     constructor(private readonly state: T) {}
 
@@ -34,7 +34,7 @@ class StateHolderClass<T> implements StateHolder<T> {
 
 class GateClass<T> extends SobokuReporterClass<T> {
 
-    constructor(private readonly gatekeeper: StateHolder<boolean>, reporter: IReporter<T>) {
+    constructor(private readonly gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>) {
         super();
         reporter.report(new SobokuListenerClass(this.listener, this));
     }
@@ -106,7 +106,7 @@ export function state<T>(initial: T): State<T> {
     return new StateClass(initial);
 }
 
-export function gate<T>(gatekeeper: StateHolder<boolean>, reporter: IReporter<T>): IReporter<T> {
+export function gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>): IReporter<T> {
     return new GateClass(gatekeeper, reporter);
 }
 
@@ -116,7 +116,7 @@ export function sarray<T>(array?: T[]): SobokuArray<T> {
     return new SobokuArrayClass<T>().concat(array) as SobokuArray<T>;
 }
 
-export function convAtomToStateHolder<T>(atom: Atom<T>): StateHolder<T> {
+export function convAtomToStateHolder<T>(atom: Atom<T>): IStateHolder<T> {
     if (u.isStateHolder(atom)) {
         return atom;
     }
