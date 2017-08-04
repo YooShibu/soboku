@@ -18,6 +18,18 @@ export interface IStateHolder<T> {
     s(): T;
 }
 
+export interface ISobokuArray<T> extends IReporter<T[]> {
+    s(): T[];
+    pop(): T | undefined;
+    push(...items: T[]): number;
+    reverse(): T[];
+    shift(): T | undefined;
+    sort(compareFn?: (a: T, b: T) => number): T[];
+    splice(start: number, deleteCount?: number): T[];
+    splice(start: number, deleteCount: number, ...items: T[]): T[];
+    unshift(...items: T[]): number;
+}
+
 export type Reporter<T> = IReporter<T> & IProgressable<T>;
 export type State<T> = IReporter<T> & IProgressable<T> & IStateHolder<T>;
 export type Calc<T> = IReporter<T> & IStateHolder<T>;
