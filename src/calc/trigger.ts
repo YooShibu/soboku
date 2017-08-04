@@ -12,7 +12,7 @@ class TriggerClass extends CalcFuncClass<boolean> {
     public listener() {
         const s = this.s();
         if (s)
-            this.tellNews(s);
+            this.next(s);
     }
 
 }

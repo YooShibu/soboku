@@ -42,10 +42,10 @@ export function listener<T>(cb: Listener<T>, thisArg?: any): SobokuListener<T> {
     return new SobokuListenerClass(cb, thisArg);
 }
 
-export abstract class SobokuReporterClass<T> implements IReporter<T> {
+export class SobokuReporterClass<T> implements IReporter<T> {
     private readonly listeners: SobokuListener<T>[] = [];
 
-    protected tellNews(val: T): T {
+    public next(val: T): T {
         const listeners = this.listeners;
         for (let i = 0; listeners.length > i; ++i)
             listeners[i].gets(val);
