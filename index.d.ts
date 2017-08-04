@@ -39,6 +39,7 @@ export function reporter<T>(): Reporter<T>;
 export function state<T>(initial: T): State<T>;
 export function combine<T>(source: { [K in keyof T]: Atom<T[K]>}): Calc<T>;
 export function gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>): IReporter<T>;
+export function publisher<T>(permition: IReporter<boolean>, reporter: IReporter<T>): IReporter<T>;
 export function dependency<R, A1>(func: (arg1: A1) => R, a1: Atom<A1>): Calc<R>;
 export function dependency<R, A1, A2>(func: (arg1: A1, arg2: A2) => R, a1: Atom<A1>, a2: Atom<A2>): Calc<R>;
 export function dependency<R, A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3) => R, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>): Calc<R>;
@@ -59,4 +60,4 @@ export interface SObservable<I, O> {
 
 export function interval(ms: Atom<number>): SObservable<boolean, number>;
 export function timeout(ms: Atom<number>): SObservable<boolean, number>;
-export function sequenceEqual<T>(sequence: T[], compare?: (x: T, y: T) => boolean): SObservable<T, true>;
+export function sequenceEqual<T>(sequence: T[], compareFn?: (x: T, y: T) => boolean): SObservable<T, true>;
