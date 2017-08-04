@@ -22,7 +22,7 @@ export type Reporter<T> = IReporter<T> & Progressable<T>;
 export type State<T> = IReporter<T> & Progressable<T> & StateHolder<T>;
 export type Calc<T> = IReporter<T> & StateHolder<T>;
 export type Atom<T> = T | Calc<T>;
-export type SobokuArray<T> = T[] & IReporter<T[]> & StateHolder<T[]>
+export type SobokuArray<T> = T[] & { readonly r: IReporter<T[]> } & StateHolder<T[]>
 
 export function reporter<T>(): Reporter<T>;
 export function state<T>(initial: T): State<T>;
