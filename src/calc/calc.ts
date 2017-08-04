@@ -27,9 +27,9 @@ export abstract class CalcClass<T> extends SobokuReporterClass<T> {
     constructor(atoms: Atom<any>[]) {
         super();
         const depends = this.depends = getDeps(atoms);
-        const listener = new SobokuListenerClass(this.listener, this);
+        const listener = this.listener;
         for (let i = 0; depends.length > i; ++i) {
-            depends[i].report(listener);
+            depends[i].report(listener, this);
         }
     }
 

@@ -17,7 +17,7 @@ class SequenceEqualClass<T> implements SObservable<T, true> {
     constructor(sequence: T[], compare = isEqual) {
         this.compare = compare;
         this.sequence = sequence;
-        this.input.report(new SobokuListenerClass(this.checkInput, this));
+        this.input.report(this.checkInput, this);
     }
 
     private checkInput(val: T): void {
@@ -34,6 +34,6 @@ class SequenceEqualClass<T> implements SObservable<T, true> {
     
 }
 
-export function sequenceEqual<T>(sequence: T[], compare?: (x: T, y: T) => boolean) {
-    return new SequenceEqualClass(sequence, compare);
+export function sequenceEqual<T>(sequence: T[], compareFunc?: (x: T, y: T) => boolean) {
+    return new SequenceEqualClass(sequence, compareFunc);
 }

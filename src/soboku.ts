@@ -1,4 +1,4 @@
-import { Atom, Calc, Listener, IReporter, IProgressable, Reporter, ISobokuArray, ISobokuListener, State, IStateHolder, IUnListener } from "../index.d";
+import { Atom, Calc, Listener, IReporter, IProgressable, Reporter, ISobokuArray, State, IStateHolder, IUnListener } from "../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "./reporter";
 import * as u from "./util";
 
@@ -36,7 +36,7 @@ class GateClass<T> extends SobokuReporterClass<T> {
 
     constructor(private readonly gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>) {
         super();
-        reporter.report(new SobokuListenerClass(this.listener, this));
+        reporter.report(this.listener, this);
     }
 
     private listener(val: T): void {

@@ -1,7 +1,7 @@
 export { gate, reporter, state } from "./soboku"
 export { sarray } from "./sarray"
-export { listener } from "./reporter"
 export { combine } from "./calc/combine"
 export { dependency } from "./calc/dependency"
 export { trigger } from "./calc/trigger"
+export { publisher } from "./calc/publisher"
 export { interval } from "./obsevable/timer"

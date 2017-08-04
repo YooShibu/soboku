@@ -1,12 +1,9 @@
 export type Listener<T> = (val: T) => void;
-export interface ISobokuListener<T> {
-    gets(val: T): void;
-}
 export interface IUnListener {
     unlisten(): void;
 }
 export interface IReporter<T> {
-    report(listener: Listener<T> | ISobokuListener<T>): IUnListener;
+    report(listener: Listener<T>, thisArg?: any): IUnListener;
     listenerCount(): number;
 }
 
@@ -50,8 +47,6 @@ export function trigger<A1, A2>(func: (arg1: A1, arg2: A2) => boolean, a1: Atom<
 export function trigger<A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3) => boolean, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>): Calc<true>;
 export function trigger<A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => boolean, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>, a4: Atom<A4>): Calc<true>;
 export function trigger(func: (...args: any[]) => boolean, ...states: Atom<any>[]): Calc<true>
-
-export function listener<T>(func: Listener<T>): ISobokuListener<T>;
 
 export interface SObservable<I, O> {
     readonly input: Reporter<I>;

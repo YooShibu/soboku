@@ -61,17 +61,14 @@ function mapObj(obj, iteratee) {
     }
     return result;
 }
-function isSobokuEvent(x) {
+function isSobokuReporter(x) {
     return typeof x === "object" && x instanceof SobokuReporterClass;
 }
 function isStateHolder(x) {
     return typeof x === "object" && typeof x.s === "function";
 }
 function isDepends(x) {
-    return isSobokuEvent(x) && has(x, "depends");
-}
-function isSobokuListener(x) {
-    return x instanceof SobokuListenerClass;
+    return isSobokuReporter(x) && has(x, "depends");
 }
 
 class UnListenerClass {
@@ -102,9 +99,6 @@ class SobokuListenerClass {
         this.listener.call(this.thisArg, news);
     }
 }
-function listener(cb, thisArg) {
-    return new SobokuListenerClass(cb, thisArg);
-}
 class SobokuReporterClass {
     constructor() {
         this.listeners = [];
@@ -115,10 +109,8 @@ class SobokuReporterClass {
             listeners[i].gets(val);
         return val;
     }
-    report(listener) {
-        const _listener = isSobokuListener(listener)
-            ? listener
-            : new SobokuListenerClass(listener);
+    report(listener, thisArg) {
+        const _listener = new SobokuListenerClass(listener, thisArg);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
     }
@@ -152,56 +144,12 @@ class GateClass extends SobokuReporterClass {
     constructor(gatekeeper, reporter) {
         super();
         this.gatekeeper = gatekeeper;
-        reporter.report(new SobokuListenerClass(this.listener, this));
+        reporter.report(this.listener, this);
     }
     listener(val) {
         if (this.gatekeeper.s()) {
             this.next(val);
         }
-    }
-}
-class SobokuArrayClass extends Array {
-    constructor() {
-        super(...arguments);
-        this.r = new SobokuReporterClass();
-    }
-    s() {
-        return this;
-    }
-    pop() {
-        const result = super.pop();
-        this.r.next(this);
-        return result;
-    }
-    push() {
-        const i = super.push.apply(this, arguments);
-        this.r.next(this);
-        return i;
-    }
-    reverse() {
-        super.reverse();
-        this.r.next(this);
-        return this;
-    }
-    shift() {
-        const result = super.shift();
-        this.r.next(this);
-        return result;
-    }
-    sort(compareFn) {
-        super.sort(compareFn);
-        this.r.next(this);
-        return this;
-    }
-    splice() {
-        super.splice.apply(this, arguments);
-        this.r.next(this);
-        return this;
-    }
-    unshift() {
-        const result = super.unshift.apply(this, arguments);
-        this.r.next(this);
-        return result;
     }
 }
 function reporter() {
@@ -213,16 +161,60 @@ function state(initial) {
 function gate(gatekeeper, reporter) {
     return new GateClass(gatekeeper, reporter);
 }
-function sarray(array) {
-    if (array == undefined)
-        return new SobokuArrayClass();
-    return new SobokuArrayClass().concat(array);
-}
 function convAtomToStateHolder(atom) {
     if (isStateHolder(atom)) {
         return atom;
     }
     return new StateHolderClass(atom);
+}
+
+class SobokuArrayClass extends SobokuReporterClass {
+    constructor(array) {
+        super();
+        this.array = [];
+        this.array = array || [];
+    }
+    s() {
+        return this.array;
+    }
+    pop() {
+        const result = this.array.pop();
+        this.next(this.array);
+        return result;
+    }
+    push() {
+        const i = Array.prototype.push.apply(this.array, arguments);
+        this.next(this.array);
+        return i;
+    }
+    reverse() {
+        this.array.reverse();
+        this.next(this.array);
+        return this.array;
+    }
+    shift() {
+        const result = this.array.shift();
+        this.next(this.array);
+        return result;
+    }
+    sort(compareFn) {
+        this.array.sort(compareFn);
+        this.next(this.array);
+        return this.array;
+    }
+    splice() {
+        Array.prototype.splice.apply(this.array, arguments);
+        this.next(this.array);
+        return this.array;
+    }
+    unshift() {
+        const result = Array.prototype.unshift.apply(this.array, arguments);
+        this.next(this.array);
+        return result;
+    }
+}
+function sarray(array) {
+    return new SobokuArrayClass(array);
 }
 
 function getDeps(atoms) {
@@ -232,7 +224,7 @@ function getDeps(atoms) {
         if (isDepends(atom)) {
             result = result.concat(atom.depends);
         }
-        else if (isSobokuEvent(atom)) {
+        else if (isSobokuReporter(atom)) {
             result.push(atom);
         }
     }
@@ -245,9 +237,9 @@ class CalcClass extends SobokuReporterClass {
     constructor(atoms) {
         super();
         const depends = this.depends = getDeps(atoms);
-        const listener$$1 = new SobokuListenerClass(this.listener, this);
+        const listener = this.listener;
         for (let i = 0; depends.length > i; ++i) {
-            depends[i].report(listener$$1);
+            depends[i].report(listener, this);
         }
     }
     listener(val) {
@@ -307,12 +299,29 @@ function trigger(func, ...atoms) {
     return new TriggerClass(atoms, func);
 }
 
-class UnhandledObservableError extends Error {
-    constructor(err) {
-        super(`Unhandled observable error: ${err.name}: ${err.message}`);
+class PublisherClass extends SobokuReporterClass {
+    constructor(permition, reporter) {
+        super();
+        this.permition = permition;
+        this.reporter = reporter;
+        permition.report(this.permitionChanged, this);
+        reporter.report(this.publish, this);
+    }
+    s() {
+        return this.reporter.s();
+    }
+    publish(val) {
+        if (this.permition.s())
+            this.next(val);
+    }
+    permitionChanged(permition) {
+        if (permition)
+            this.next(this.reporter.s());
     }
 }
-UnhandledObservableError.prototype.name = "UnhandledObservableError";
+function publisher(permition, reporter) {
+    return new PublisherClass(permition, reporter);
+}
 
 class TimerObservable {
     constructor(ms) {
@@ -321,9 +330,9 @@ class TimerObservable {
         this.cb = () => this.output.next(Date.now());
         this.isEmitting = false;
         const _ms = this.ms = convAtomToStateHolder(ms);
-        this.input.report(new SobokuListenerClass(this.fireTimer, this));
-        if (isSobokuEvent(_ms))
-            _ms.report(new SobokuListenerClass(this.msChanged, this));
+        this.input.report(this.fireTimer, this);
+        if (isSobokuReporter(_ms))
+            _ms.report(this.msChanged, this);
     }
     msChanged(ms) {
         if (this.isEmitting) {
@@ -352,12 +361,11 @@ function interval(ms) {
 
 exports.gate = gate;
 exports.reporter = reporter;
-exports.sarray = sarray;
 exports.state = state;
-exports.listener = listener;
+exports.sarray = sarray;
 exports.combine = combine;
 exports.dependency = dependency;
 exports.trigger = trigger;
-exports.UnhandledObservableError = UnhandledObservableError;
+exports.publisher = publisher;
 exports.interval = interval;
 //# sourceMappingURL=soboku.js.map

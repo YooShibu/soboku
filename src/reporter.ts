@@ -1,12 +1,12 @@
-import { Listener, IReporter, ISobokuListener, IUnListener } from "../index.d";
+import { Listener, IReporter, IUnListener } from "../index.d";
 import * as u from "./util";
 
 
 class UnListenerClass<T> implements IUnListener {
-    private listeners: ISobokuListener<any>[] | null;
-    private listener: ISobokuListener<T> | null;
+    private listeners: SobokuListenerClass<any>[] | null;
+    private listener: SobokuListenerClass<T> | null;
     
-    constructor(listeners: ISobokuListener<any>[], listener: ISobokuListener<T>) {
+    constructor(listeners: SobokuListenerClass<any>[], listener: SobokuListenerClass<T>) {
         this.listeners = listeners;
         this.listener = listener;
     }
@@ -24,7 +24,7 @@ class UnListenerClass<T> implements IUnListener {
     
 }
 
-export class SobokuListenerClass<T> implements ISobokuListener<T> {
+export class SobokuListenerClass<T> {
 
     constructor(private readonly listener: Listener<T>, private readonly thisArg?: any) {
         if (typeof listener !== "function") {
@@ -38,12 +38,8 @@ export class SobokuListenerClass<T> implements ISobokuListener<T> {
     
 }
 
-export function listener<T>(cb: Listener<T>, thisArg?: any): ISobokuListener<T> {
-    return new SobokuListenerClass(cb, thisArg);
-}
-
 export class SobokuReporterClass<T> implements IReporter<T> {
-    private readonly listeners: ISobokuListener<T>[] = [];
+    private readonly listeners: SobokuListenerClass<T>[] = [];
 
     public next(val: T): T {
         const listeners = this.listeners;
@@ -52,10 +48,8 @@ export class SobokuReporterClass<T> implements IReporter<T> {
         return val;
     }
 
-    public report(listener: Listener<T> | ISobokuListener<T>): IUnListener {
-        const _listener = u.isSobokuListener(listener)
-            ? listener
-            : new SobokuListenerClass(listener);
+    public report(listener: Listener<T>, thisArg?: any): IUnListener {
+        const _listener = new SobokuListenerClass(listener, thisArg);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
     }

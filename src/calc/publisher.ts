@@ -6,8 +6,8 @@ class PublisherClass<T> extends SobokuReporterClass<T> implements IStateHolder<T
 
     constructor(private readonly permition: Calc<boolean>, private readonly reporter: Calc<T>) {
         super();
-        permition.report(new SobokuListenerClass(this.permitionChanged, this));
-        reporter.report(new SobokuListenerClass(this.publish, this));
+        permition.report(this.permitionChanged, this);
+        reporter.report(this.publish, this);
     }
 
     public s(): T {
