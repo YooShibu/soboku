@@ -1,6 +1,6 @@
 import { Reporter, SObservable } from "../../index.d";
 import { reporter } from "../soboku";
-import { SobokuListenerClass } from "../events";
+import { SobokuListenerClass } from "../reporter";
 
 
 function isEqual(x: any, y: any): boolean {

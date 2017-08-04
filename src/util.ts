@@ -1,6 +1,6 @@
 import { StateHolder, SobokuListener } from "../index.d";
 import { Depends } from "./soboku";
-import { SobokuReporterClass, SobokuListenerClass } from "./events";
+import { SobokuReporterClass, SobokuListenerClass } from "./reporter";
 
 
 export function optimizeCB<T>(func: (...args: any[]) => T): (args: any[]) => T {

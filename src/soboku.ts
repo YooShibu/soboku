@@ -1,5 +1,5 @@
 import { Atom, Calc, Listener, IReporter, Progressable, Reporter, SobokuArray, SobokuListener, State, StateHolder, UnListener } from "../index.d";
-import { SobokuReporterClass, SobokuListenerClass } from "./events";
+import { SobokuReporterClass, SobokuListenerClass } from "./reporter";
 import * as u from "./util";
 
 export type Depends = { readonly depends: SobokuReporterClass<any>[] };

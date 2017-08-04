@@ -1,7 +1,7 @@
 import { interval, timeout } from "./timer";
 import { Atom, Reporter, SObservable, State } from "../../index.d";
 import { trigger } from "../calc/trigger";
-import { listener } from "../events";
+import { listener } from "../reporter";
 import { state } from "../soboku";
 
 class Counter<T extends number | State<number>> {

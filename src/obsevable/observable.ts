@@ -1,5 +1,5 @@
 import { Reporter, SObservable, SObservableWithError, IReporter } from "../../index.d";
-import { SobokuReporterClass } from "../events";
+import { SobokuReporterClass } from "../reporter";
 
 
 export abstract class ObservableClass<I, O> implements SObservableWithError<I, O> {

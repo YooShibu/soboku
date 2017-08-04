@@ -3,7 +3,7 @@ import { reporter } from "./soboku";
 import { spyOnAll } from "./helper/helper";
 
 
-describe("event", () => {
+describe("reporter", () => {
     let r: { f1: () => any, f2: () => any }, g: Reporter<string>;
     beforeEach(() => {
         r = spyOnAll({ f1() {}, f2() {} });

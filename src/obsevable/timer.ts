@@ -1,6 +1,6 @@
 import { SObservable, Atom, Reporter, State, StateHolder } from "../../index.d";
 import { convAtomToStateHolder, reporter, state } from "../soboku";
-import { SobokuListenerClass } from "../events";
+import { SobokuListenerClass } from "../reporter";
 import * as u from "../util";
 
 

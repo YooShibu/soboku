@@ -1,4 +1,4 @@
-import { reporter, state, gate } from "./soboku";
+import { reporter, state, gate, sarray } from "./soboku";
 import { IDefaultSpy, defaultSpy } from "./helper/helper";
 
 
@@ -50,6 +50,24 @@ describe("soboku", () => {
             
             expect(r.f).toHaveBeenCalledTimes(1);
             expect(r.f).toHaveBeenCalledWith("Butthead");
+        });
+    });
+
+    describe("sarray", () => {
+        it("should create sarray from array", () => {
+            const arr = sarray([1, 2, 3]);
+            expect(arr).not.toEqual([1, 2, 3]);
+            expect(arr[0]).toBe(1);
+            expect(arr[1]).toBe(2);
+            expect(arr[2]).toBe(3);
+        });
+        it("should report when pop", () => {
+            const arr = sarray([1, 2, 3]);
+            arr.r.report(r.f);
+            arr.pop();
+            console.log(Object.prototype.toString.call(arr));
+            expect(r.f).toHaveBeenCalledTimes(1);
+            expect(r.f).toHaveBeenCalledWith([1, 2]);
         });
     });
     
