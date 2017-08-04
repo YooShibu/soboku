@@ -29,5 +29,13 @@ describe("publisher", () => {
         expect(r.f).toHaveBeenCalledWith(20);
         expect(r.f).toHaveBeenCalledWith(200);
     });
+
+    it("should implements IStateHolder that 's' returns state of reporter", () => {
+        const _num = state(10);
+        const complete = state(false);
+        const num = publisher(complete, _num);
+
+        expect(num.s()).toBe(10);
+    });
     
 });
