@@ -4,8 +4,8 @@ import { SobokuListenerClass } from "../reporter";
 import * as u from "../util";
 
 
-abstract class TimerObservable implements SObservable<boolean, number> {
-    public readonly input = reporter<boolean>();
+abstract class TimerObservable implements SObservable<State<boolean>, number> {
+    public readonly input = state(false);
     public readonly output = reporter<number>();
     protected readonly cb = () => this.output.next(Date.now());
     protected readonly ms: IStateHolder<number>;
@@ -60,10 +60,10 @@ class TimeoutObservable extends TimerObservable {
 }
 
 
-export function interval(ms: Atom<number>): SObservable<boolean, number> {
+export function interval(ms: Atom<number>): SObservable<State<boolean>, number> {
     return new IntervalObservable(ms);
 }
 
-export function timeout(ms: Atom<number>): SObservable<boolean, number> {
+export function timeout(ms: Atom<number>): SObservable<State<boolean>, number> {
     return new TimeoutObservable(ms);
 }

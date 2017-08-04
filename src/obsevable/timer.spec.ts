@@ -7,10 +7,10 @@ class Counter<T extends number | State<number>> {
     private readonly count = state(0);
     public readonly isEnd = trigger(c => c === this.times, this.count);
     public readonly ms: T;
-    public readonly timer: SObservable<boolean, number>;
+    public readonly timer: SObservable<State<boolean>, number>;
     private readonly times: number;
 
-    constructor(ms: T, times: number, timer: (ms: Atom<number>) => SObservable<boolean, number>) {
+    constructor(ms: T, times: number, timer: (ms: Atom<number>) => SObservable<State<boolean>, number>) {
         this.ms = ms;
         this.times = times;
         this.timer = timer(ms);

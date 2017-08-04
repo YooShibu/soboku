@@ -7,7 +7,7 @@ function isEqual(x: any, y: any): boolean {
     return x === y;
 }
 
-class SequenceEqualClass<T> implements SObservable<T, true> {
+class SequenceEqualClass<T> implements SObservable<Reporter<T>, true> {
     public readonly input = reporter<T>();
     public readonly output = reporter<true>();
     private readonly compare: (x: any, y: any) => boolean;

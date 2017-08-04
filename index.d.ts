@@ -48,11 +48,11 @@ export function trigger<A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3) => bool
 export function trigger<A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => boolean, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>, a4: Atom<A4>): Calc<true>;
 export function trigger(func: (...args: any[]) => boolean, ...states: Atom<any>[]): Calc<true>
 
-export interface SObservable<I, O> {
-    readonly input: Reporter<I>;
+export interface SObservable<I extends Reporter<any>, O> {
+    readonly input: I;
     readonly output: IReporter<O>;
 }
 
-export function interval(ms: Atom<number>): SObservable<boolean, number>;
-export function timeout(ms: Atom<number>): SObservable<boolean, number>;
-export function sequenceEqual<T>(sequence: T[], compareFn?: (x: T, y: T) => boolean): SObservable<T, true>;
+export function interval(ms: Atom<number>): SObservable<State<boolean>, number>;
+export function timeout(ms: Atom<number>): SObservable<State<boolean>, number>;
+export function sequenceEqual<T>(sequence: T[], compareFn?: (x: T, y: T) => boolean): SObservable<Reporter<T>, true>;
