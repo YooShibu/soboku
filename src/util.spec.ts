@@ -107,8 +107,8 @@ describe("util", () => {
 
     describe("isSobokuEvent", () => {
         it("should return true if argument is instance of SobokuEventClass", () => {
-            expect(u.isSobokuEvent(state(100))).toBeTruthy();
-            expect(u.isSobokuEvent(undefined)).toBeFalsy();
+            expect(u.isSobokuReporter(state(100))).toBeTruthy();
+            expect(u.isSobokuReporter(undefined)).toBeFalsy();
         });
     });
 

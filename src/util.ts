@@ -72,7 +72,7 @@ export function mapObj<T extends { [key: string]: any }, U extends { [key: strin
     return result as U;
 }
 
-export function isSobokuEvent(x: any): x is SobokuReporterClass<any> {
+export function isSobokuReporter(x: any): x is SobokuReporterClass<any> {
     return typeof x === "object" && x instanceof SobokuReporterClass;
 }
 
@@ -81,7 +81,7 @@ export function isStateHolder(x: any): x is IStateHolder<any> {
 }
 
 export function isDepends(x: any): x is Depends {
-    return isSobokuEvent(x) && has(x, "depends");
+    return isSobokuReporter(x) && has(x, "depends");
 }
 
 export function isSobokuListener<T>(x: any): x is ISobokuListener<T> {

@@ -4,13 +4,13 @@ import { SobokuReporterClass, SobokuListenerClass } from "../reporter";
 import * as u from "../util";
 
 
-function getDeps(atoms: Atom<any>[]): SobokuReporterClass<any>[] {
+export function getDeps(atoms: Atom<any>[]): SobokuReporterClass<any>[] {
     let result: SobokuReporterClass<any>[] = [];
     for (let i = 0; atoms.length > i; ++i) {
         const atom = atoms[i];
         if(u.isDepends(atom)) {
             result = result.concat(atom.depends);
-        } else if (u.isSobokuEvent(atom)) {
+        } else if (u.isSobokuReporter(atom)) {
             result.push(atom);
         }
     }

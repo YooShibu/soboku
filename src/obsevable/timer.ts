@@ -15,7 +15,7 @@ abstract class TimerObservable implements SObservable<boolean, number> {
     constructor(ms: Atom<number>) {
         const _ms = this.ms = convAtomToStateHolder(ms);
         this.input.report(new SobokuListenerClass(this.fireTimer, this));
-        if (u.isSobokuEvent(_ms))
+        if (u.isSobokuReporter(_ms))
             _ms.report(new SobokuListenerClass(this.msChanged, this));
     }
 
