@@ -120,7 +120,7 @@ nums.push(4);
 ~~~
 
 
-#### `dependency<T>(func: (...atoms: Atom<any>[]) => T, atoms: Atom<any>[], thisArg?: any): Calc<T>`
+#### `dependency<T>(func: (...atoms: Atom<any>[]) => T, ...atoms: Atom<any>[]): Calc<T>`
 
 ~~~ typescript
 import { state, dependency } from "soboku"
@@ -134,8 +134,8 @@ function add(num1: number, num2: number): number {
 }
 
 const x = state(10);
-const y = dependency(twice, [x]);
-const z = dependency(add, [x, y]);
+const y = dependency(twice, x);
+const z = dependency(add, x, y);
 console.log(z.s()) // 30
 
 z.report(console.log);
@@ -183,7 +183,7 @@ source.next(2);
 // 2
 ~~~
 
-#### `trigger(predicate: (...atoms: Atom<any>[]), atoms<any>[], thisArg?: any): Calc<boolean>`
+#### `trigger(predicate: (...atoms: Atom<any>[]), ...atoms<any>[]): Calc<boolean>`
 
 ~~~ typescript
 import { state, trigger } from "soboku"
@@ -193,7 +193,7 @@ function isGreaterThan10(x: number): boolean {
 }
 
 const count = state(0);
-const isDone = trigger(isGreaterThan10, [count]);
+const isDone = trigger(isGreaterThan10, count);
 console.log(isDone.s()) // false
 
 isDone.report(console.log);
