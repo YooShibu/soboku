@@ -2,17 +2,18 @@ import { ISObservable, Atom, Reporter, State, IStateHolder } from "../../index.d
 import { convAtomToStateHolder, state } from "../state/state";
 import { SobokuListenerClass, SobokuReporterClass } from "../reporter/reporter";
 import * as u from "../util";
+import { SObservable } from "./observable";
 
 
-abstract class TimerObservable implements ISObservable<State<boolean>, number> {
+abstract class TimerObservable extends SObservable<State<boolean>, number> {
     public readonly input = state(false);
-    public readonly output = new SobokuReporterClass<number>();
     protected readonly cb = () => this.output.next(Date.now());
     protected readonly ms: IStateHolder<number>;
     protected timer: NodeJS.Timer;
-    protected isEmitting = false;
+    protected isRunning = false;
 
     constructor(ms: Atom<number>) {
+        super();
         const _ms = this.ms = convAtomToStateHolder(ms);
         this.input.report(this.fireTimer, this);
         if (u.isSobokuReporter(_ms))
@@ -20,7 +21,7 @@ abstract class TimerObservable implements ISObservable<State<boolean>, number> {
     }
 
     private msChanged(ms: number) {
-        if (this.isEmitting) {
+        if (this.isRunning) {
             this.fireTimer(false);
             this.fireTimer(true, ms);
         }
@@ -28,7 +29,7 @@ abstract class TimerObservable implements ISObservable<State<boolean>, number> {
 
     private fireTimer(trigger: boolean, ms?: number): void {
         this.fire(trigger, ms || this.ms.s());
-        this.isEmitting = trigger;
+        this.isRunning = trigger;
     }
 
     protected abstract fire(trigger: boolean, ms: number): void;
@@ -40,7 +41,7 @@ class IntervalObservable extends TimerObservable {
     protected fire(trigger: boolean, ms: number) {
         if (trigger === false) {
             clearInterval(this.timer);
-        } else if (this.isEmitting === false) {
+        } else if (this.isRunning === false) {
             this.timer = setInterval(this.cb, ms);
         }
     }

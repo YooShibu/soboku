@@ -1,19 +1,20 @@
 import { Reporter, ISObservable } from "../../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import { SObservable } from "./observable";
 
 
 function isEqual(x: any, y: any): boolean {
     return x === y;
 }
 
-class SequenceEqualClass<T> implements ISObservable<Reporter<T>, true> {
+class SequenceEqualClass<T> extends SObservable<Reporter<T>, true> {
     public readonly input = new SobokuReporterClass<T>();
-    public readonly output = new SobokuReporterClass<true>();
     private readonly compare: (x: any, y: any) => boolean;
     private readonly sequence: T[];
     private i = 0;
 
     constructor(sequence: T[], compare = isEqual) {
+        super();
         this.compare = compare;
         this.sequence = sequence;
         this.input.report(this.checkInput, this);
