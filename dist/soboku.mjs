@@ -382,11 +382,11 @@ class SequenceEqualClass extends SObservable {
         this.input = new SobokuReporterClass();
         this.i = 0;
         this.compare = compare;
-        this.sequence = sequence;
+        this.sequence = convAtomToStateHolder(sequence);
         this.input.report(this.checkInput, this);
     }
     checkInput(val) {
-        const sequence = this.sequence;
+        const sequence = this.sequence.s();
         if (this.compare(sequence[this.i], val) === false) {
             this.i = 0;
             return;

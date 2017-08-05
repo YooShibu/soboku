@@ -446,12 +446,12 @@ var SequenceEqualClass = (function (_super) {
         _this.input = new SobokuReporterClass();
         _this.i = 0;
         _this.compare = compare;
-        _this.sequence = sequence;
+        _this.sequence = convAtomToStateHolder(sequence);
         _this.input.report(_this.checkInput, _this);
         return _this;
     }
     SequenceEqualClass.prototype.checkInput = function (val) {
-        var sequence = this.sequence;
+        var sequence = this.sequence.s();
         if (this.compare(sequence[this.i], val) === false) {
             this.i = 0;
             return;
