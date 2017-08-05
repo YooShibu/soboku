@@ -3,6 +3,7 @@ import { convAtomToStateHolder } from "../soboku";
 import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 
+export type Depends = { readonly depends: SobokuReporterClass<any>[] };
 
 export function getDeps(atoms: Atom<any>[]): SobokuReporterClass<any>[] {
     let result: SobokuReporterClass<any>[] = [];

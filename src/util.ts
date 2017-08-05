@@ -1,5 +1,5 @@
 import { IStateHolder } from "../index.d";
-import { Depends } from "./soboku";
+import { Depends } from "./calc/calc";
 import { SobokuReporterClass, SobokuListenerClass } from "./reporter/reporter";
 
 

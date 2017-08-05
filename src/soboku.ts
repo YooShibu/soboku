@@ -2,8 +2,6 @@ import { Atom, Calc, Listener, IReporter, IProgressable, Reporter, ISobokuArray,
 import { SobokuReporterClass, SobokuListenerClass } from "./reporter/reporter";
 import * as u from "./util";
 
-export type Depends = { readonly depends: SobokuReporterClass<any>[] };
-
 
 class StateClass<T> extends SobokuReporterClass<T> implements IProgressable<T> {
 
