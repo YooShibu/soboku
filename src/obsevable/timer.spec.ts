@@ -1,5 +1,5 @@
 import { interval, timeout } from "./timer";
-import { Atom, Reporter, SObservable, State } from "../../index.d";
+import { Atom, Reporter, ISObservable, State } from "../../index.d";
 import { trigger } from "../calc/trigger";
 import { state } from "../state/state";
 
@@ -7,10 +7,10 @@ class Counter<T extends number | State<number>> {
     private readonly count = state(0);
     public readonly isEnd = trigger(c => c === this.times, this.count);
     public readonly ms: T;
-    public readonly timer: SObservable<State<boolean>, number>;
+    public readonly timer: ISObservable<State<boolean>, number>;
     private readonly times: number;
 
-    constructor(ms: T, times: number, timer: (ms: Atom<number>) => SObservable<State<boolean>, number>) {
+    constructor(ms: T, times: number, timer: (ms: Atom<number>) => ISObservable<State<boolean>, number>) {
         this.ms = ms;
         this.times = times;
         this.timer = timer(ms);

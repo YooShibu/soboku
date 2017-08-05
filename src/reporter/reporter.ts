@@ -1,8 +1,8 @@
-import { Listener, IReporter, IUnListener, Reporter } from "../../index.d";
+import { Listener, IReporter, IUnsubscriber, Reporter } from "../../index.d";
 import * as u from "../util";
 
 
-class UnListenerClass<T> implements IUnListener {
+class UnListenerClass<T> implements IUnsubscriber {
     private listeners: SobokuListenerClass<any>[] | null;
     private listener: SobokuListenerClass<T> | null;
     
@@ -11,7 +11,7 @@ class UnListenerClass<T> implements IUnListener {
         this.listener = listener;
     }
 
-    public unlisten() {
+    public unsubscribe() {
         const listeners = this.listeners;
         if (listeners === null) {
             return;
@@ -48,7 +48,7 @@ export class SobokuReporterClass<T> implements IReporter<T> {
         return val;
     }
 
-    public report(listener: Listener<T>, thisArg?: any): IUnListener {
+    public report(listener: Listener<T>, thisArg?: any): IUnsubscriber {
         const _listener = new SobokuListenerClass(listener, thisArg);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);

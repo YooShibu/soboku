@@ -24,11 +24,11 @@ describe("reporter", () => {
     });
 
     describe("report", () => {
-        it("should return unlistener", () => {
-            const unlistener = g.report(r.f1);
+        it("should return unsubscriber", () => {
+            const unsubscriber = g.report(r.f1);
             g.next("hello");
-            unlistener.unlisten();
-            unlistener.unlisten();
+            unsubscriber.unsubscribe();
+            unsubscriber.unsubscribe();
             g.next("good bye");
 
             expect(r.f1).toHaveBeenCalledTimes(1);
@@ -43,9 +43,9 @@ describe("reporter", () => {
     describe("listenerCount", () => {
         it("should return listener count", () => {
             expect(g.listenerCount()).toBe(0);
-            const unlistener = g.report(r.f1);
+            const unsubscriber = g.report(r.f1);
             expect(g.listenerCount()).toBe(1);
-            unlistener.unlisten();
+            unsubscriber.unsubscribe();
             expect(g.listenerCount()).toBe(0);
         });
     });

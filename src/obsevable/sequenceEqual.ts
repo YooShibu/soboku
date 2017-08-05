@@ -1,4 +1,4 @@
-import { Reporter, SObservable } from "../../index.d";
+import { Reporter, ISObservable } from "../../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
 
 
@@ -6,7 +6,7 @@ function isEqual(x: any, y: any): boolean {
     return x === y;
 }
 
-class SequenceEqualClass<T> implements SObservable<Reporter<T>, true> {
+class SequenceEqualClass<T> implements ISObservable<Reporter<T>, true> {
     public readonly input = new SobokuReporterClass<T>();
     public readonly output = new SobokuReporterClass<true>();
     private readonly compare: (x: any, y: any) => boolean;
