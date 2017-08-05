@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/YooShibu/soboku.svg?branch=master)](https://travis-ci.org/YooShibu/soboku)
 [![codecov](https://codecov.io/gh/YooShibu/soboku/branch/master/graph/badge.svg)](https://codecov.io/gh/YooShibu/soboku)
+[![gzip size](http://img.badgesize.io/https://unpkg.com/soboku/dist/soboku.min.js?compression=gzip)](https://unpkg.com/soboku/dist/soboku.min.js)
 
 
 # soboku
