@@ -1,8 +1,8 @@
-import { ISobokuArray } from "../../index.d";
+import { ISArray } from "../../index.d";
 import { SobokuReporterClass } from "../reporter/reporter";
 
 
-class SobokuArrayClass<T> extends SobokuReporterClass<T[]> implements ISobokuArray<T> {
+class SobokuArrayClass<T> extends SobokuReporterClass<T[]> implements ISArray<T> {
     private readonly array: T[] = [];
 
     constructor(array?: T[]) {
@@ -58,6 +58,6 @@ class SobokuArrayClass<T> extends SobokuReporterClass<T[]> implements ISobokuArr
 
 }
 
-export function sarray<T>(array?: T[]): ISobokuArray<T> {
+export function sarray<T>(array?: T[]): ISArray<T> {
     return new SobokuArrayClass<T>(array);
 }

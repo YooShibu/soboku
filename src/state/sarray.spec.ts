@@ -1,10 +1,10 @@
 import { sarray } from "./sarray";
-import { ISobokuArray } from "../../index.d";
+import { ISArray } from "../../index.d";
 import { defaultSpy, IDefaultSpy } from "../helper/helper";
 
 
 describe("sarray", () => {
-    let r: IDefaultSpy, arr: ISobokuArray<number>;
+    let r: IDefaultSpy, arr: ISArray<number>;
     beforeEach(() => {
         r = defaultSpy();
         arr = sarray([1, 2, 3])

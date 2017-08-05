@@ -1,5 +1,5 @@
 import { state } from "./state";
-import { ISobokuArray } from "../../index.d";
+import { ISArray } from "../../index.d";
 import { IDefaultSpy, defaultSpy } from "../helper/helper";
 
 
@@ -20,7 +20,7 @@ describe("state", () => {
         const num = state(20);
         num.report(r.f);
         num.next(100);
-
+        
         expect(r.f).toHaveBeenCalledTimes(1);
         expect(r.f).toHaveBeenCalledWith(100);
     });
