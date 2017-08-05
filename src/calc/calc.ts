@@ -1,5 +1,5 @@
 import { Atom, IStateHolder } from "../../index.d";
-import { convAtomToStateHolder } from "../soboku";
+import { convAtomToStateHolder } from "../state/state";
 import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 

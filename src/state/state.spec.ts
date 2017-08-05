@@ -1,6 +1,6 @@
-import { state } from "./soboku";
-import { ISobokuArray } from "../index.d";
-import { IDefaultSpy, defaultSpy } from "./helper/helper";
+import { state } from "./state";
+import { ISobokuArray } from "../../index.d";
+import { IDefaultSpy, defaultSpy } from "../helper/helper";
 
 
 describe("soboku", () => {

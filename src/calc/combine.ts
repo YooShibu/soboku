@@ -1,5 +1,5 @@
 import { Atom, Calc, IStateHolder } from "../../index.d";
-import { convAtomToStateHolder } from "../soboku";
+import { convAtomToStateHolder } from "../state/state";
 import * as u from "../util";
 import { CalcClass, getState } from "./calc";
 

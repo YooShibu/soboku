@@ -14,12 +14,12 @@ rollup({
     ]
 }).then(val => {
     val.write({
-        dest: path.resolve("./dist/soboku.js"),
+        dest: path.resolve("./dist/state/state.js"),
         sourceMap: true,
         format: "cjs"
     });
     val.write({
-        dest: path.resolve("./dist/soboku.mjs"),
+        dest: path.resolve("./dist/state/state.mjs"),
         format: "es"
     });
 });
@@ -33,7 +33,7 @@ rollup({
     ],
 }).then(val => {
     val.write({
-        dest: path.resolve("./dist/soboku.browser.min.js"),
+        dest: path.resolve("./dist/state/state.browser.min.js"),
         format: "iife",
         moduleName: "soboku",
         sourceMap: true

@@ -1,7 +1,7 @@
 import { interval, timeout } from "./timer";
 import { Atom, Reporter, SObservable, State } from "../../index.d";
 import { trigger } from "../calc/trigger";
-import { state } from "../soboku";
+import { state } from "../state/state";
 
 class Counter<T extends number | State<number>> {
     private readonly count = state(0);

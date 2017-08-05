@@ -1,5 +1,5 @@
 import { trigger } from "./trigger";
-import { state } from "../soboku";
+import { state } from "../state/state";
 import { spyOnAll } from "../helper/helper";
 
 

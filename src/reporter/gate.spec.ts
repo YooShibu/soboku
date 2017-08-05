@@ -1,5 +1,5 @@
 import { gate } from "./gate";
-import { state } from "../soboku";
+import { state } from "../state/state";
 import { reporter } from "./reporter";
 import { defaultSpy } from "../helper/helper";
 

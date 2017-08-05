@@ -1,6 +1,6 @@
 import { sarray } from "./sarray";
-import { ISobokuArray } from "../index.d";
-import { defaultSpy, IDefaultSpy } from "./helper/helper";
+import { ISobokuArray } from "../../index.d";
+import { defaultSpy, IDefaultSpy } from "../helper/helper";
 
 
 describe("sarray", () => {

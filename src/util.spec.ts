@@ -1,5 +1,5 @@
 import * as u from "./util";
-import { state } from "./soboku";
+import { state } from "./state/state";
 import { reporter } from "./reporter/reporter";
 import { dependency } from "./calc/dependency";
 import { spyOnAll, twice } from "./helper/helper";

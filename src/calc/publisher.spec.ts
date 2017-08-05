@@ -1,5 +1,5 @@
 import { publisher } from "./publisher";
-import { state } from "../soboku";
+import { state } from "../state/state";
 import { dependency } from "./dependency";
 import { IDefaultSpy, defaultSpy } from "../helper/helper";
 

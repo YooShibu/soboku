@@ -1,5 +1,5 @@
 import { dependency } from "./dependency";
-import { state } from "../soboku";
+import { state } from "../state/state";
 import { add, spyOnAll, twice } from "../helper/helper";
 
 

@@ -1,6 +1,6 @@
-import { Atom, Calc, Listener, IReporter, IProgressable, Reporter, ISobokuArray, State, IStateHolder, IUnListener } from "../index.d";
-import { SobokuReporterClass, SobokuListenerClass } from "./reporter/reporter";
-import * as u from "./util";
+import { Atom, IProgressable, State, IStateHolder } from "../../index.d";
+import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import * as u from "../util";
 
 
 class StateClass<T> extends SobokuReporterClass<T> implements IProgressable<T> {
