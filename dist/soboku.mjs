@@ -72,7 +72,7 @@ class UnListenerClass {
         this.listeners = listeners;
         this.listener = listener;
     }
-    unlisten() {
+    unsubscribe() {
         const listeners = this.listeners;
         if (listeners === null) {
             return;
@@ -320,26 +320,32 @@ function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-class TimerObservable {
-    constructor(ms) {
-        this.input = state(false);
+class SObservable {
+    constructor() {
         this.output = new SobokuReporterClass();
+    }
+}
+
+class TimerObservable extends SObservable {
+    constructor(ms) {
+        super();
+        this.input = state(false);
         this.cb = () => this.output.next(Date.now());
-        this.isEmitting = false;
+        this.isRunning = false;
         const _ms = this.ms = convAtomToStateHolder(ms);
         this.input.report(this.fireTimer, this);
         if (isSobokuReporter(_ms))
             _ms.report(this.msChanged, this);
     }
     msChanged(ms) {
-        if (this.isEmitting) {
+        if (this.isRunning) {
             this.fireTimer(false);
             this.fireTimer(true, ms);
         }
     }
     fireTimer(trigger, ms) {
         this.fire(trigger, ms || this.ms.s());
-        this.isEmitting = trigger;
+        this.isRunning = trigger;
     }
 }
 class IntervalObservable extends TimerObservable {
@@ -347,7 +353,7 @@ class IntervalObservable extends TimerObservable {
         if (trigger === false) {
             clearInterval(this.timer);
         }
-        else if (this.isEmitting === false) {
+        else if (this.isRunning === false) {
             this.timer = setInterval(this.cb, ms);
         }
     }
@@ -370,10 +376,10 @@ function timeout(ms) {
 function isEqual(x, y) {
     return x === y;
 }
-class SequenceEqualClass {
+class SequenceEqualClass extends SObservable {
     constructor(sequence, compare = isEqual) {
+        super();
         this.input = new SobokuReporterClass();
-        this.output = new SobokuReporterClass();
         this.i = 0;
         this.compare = compare;
         this.sequence = sequence;
