@@ -1,4 +1,4 @@
-import { reporter, state, gate } from "./soboku";
+import { state } from "./soboku";
 import { ISobokuArray } from "../index.d";
 import { IDefaultSpy, defaultSpy } from "./helper/helper";
 
@@ -7,17 +7,6 @@ describe("soboku", () => {
     let r: IDefaultSpy;
     beforeEach(() => r = defaultSpy());
     
-    describe("stream", () => {
-        it("should emit listeners when next emitted", () => {
-            const message = reporter<string>();
-            message.report(r.f);
-            message.next("Hello");
-
-            expect(r.f).toHaveBeenCalledTimes(1);
-            expect(r.f).toHaveBeenCalledWith("Hello");
-        });
-    });
-
     describe("state", () => {
         it("should have state", () => {
             const num = state(100);
@@ -35,22 +24,6 @@ describe("soboku", () => {
 
             expect(r.f).toHaveBeenCalledTimes(1);
             expect(r.f).toHaveBeenCalledWith(100);
-        });
-    });
-
-    describe("gate", () => {
-        it("should emit listeners when reporter reports and gatekeeper is true", () => {
-            const Biff = reporter<string>();
-            const earplug = state(false);
-            const Marty = gate(earplug, Biff);
-            Marty.report(r.f);
-            Biff.next("Hello");
-            Biff.next("Hello, hello, anybody home?");
-            earplug.next(true);
-            Biff.next("Butthead");
-            
-            expect(r.f).toHaveBeenCalledTimes(1);
-            expect(r.f).toHaveBeenCalledWith("Butthead");
         });
     });
 

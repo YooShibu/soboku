@@ -1,5 +1,5 @@
 import { ISobokuArray } from "../index.d";
-import { SobokuReporterClass } from "./reporter";
+import { SobokuReporterClass } from "./reporter/reporter";
 
 
 class SobokuArrayClass<T> extends SobokuReporterClass<T[]> implements ISobokuArray<T> {

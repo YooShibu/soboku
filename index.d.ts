@@ -33,15 +33,15 @@ export type Calc<T> = IReporter<T> & IStateHolder<T>;
 export type Atom<T> = T | Calc<T>;
 
 export function reporter<T>(): Reporter<T>;
+export function gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>): IReporter<T>;
 export function state<T>(initial: T): State<T>;
 export function combine<T>(source: { [K in keyof T]: Atom<T[K]>}): Calc<T>;
-export function gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>): IReporter<T>;
-export function publisher<T>(permition: IReporter<boolean>, reporter: IReporter<T>): IReporter<T>;
 export function dependency<R, A1>(func: (arg1: A1) => R, a1: Atom<A1>): Calc<R>;
 export function dependency<R, A1, A2>(func: (arg1: A1, arg2: A2) => R, a1: Atom<A1>, a2: Atom<A2>): Calc<R>;
 export function dependency<R, A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3) => R, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>): Calc<R>;
 export function dependency<R, A1, A2, A3, A4>(func: (arg1: A1, arg2: A2, arg3: A3, arg4: A4) => R, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>, a4: Atom<A4>): Calc<R>;
 export function dependency<R>(func: (...args: any[]) => R, ...states: Atom<any>[]): Calc<R>
+export function publisher<T>(permition: IReporter<boolean>, reporter: IReporter<T>): Calc<T>;
 export function trigger<A1>(func: (arg1: A1) => boolean, a1: Atom<A1>): Calc<true>;
 export function trigger<A1, A2>(func: (arg1: A1, arg2: A2) => boolean, a1: Atom<A1>, a2: Atom<A2>): Calc<true>;
 export function trigger<A1, A2, A3>(func: (arg1: A1, arg2: A2, arg3: A3) => boolean, a1: Atom<A1>, a2: Atom<A2>, a3: Atom<A3>): Calc<true>;

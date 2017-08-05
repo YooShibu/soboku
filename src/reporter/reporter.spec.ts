@@ -1,6 +1,6 @@
-import { Reporter } from "../index.d";
-import { reporter } from "./soboku";
-import { spyOnAll } from "./helper/helper";
+import { reporter } from "./reporter";
+import { Reporter } from "../../index.d";
+import { spyOnAll } from "../helper/helper";
 
 
 describe("reporter", () => {
@@ -9,7 +9,7 @@ describe("reporter", () => {
         r = spyOnAll({ f1() {}, f2() {} });
         g = reporter();
     });
-    
+
     describe("emitListeners", () => {
         it("should pass the arguemnt to listeners", () => {
             g.report(r.f1);

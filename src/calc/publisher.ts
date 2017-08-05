@@ -1,5 +1,5 @@
 import { Calc, IStateHolder } from "../../index.d";
-import { SobokuReporterClass, SobokuListenerClass } from "../reporter";
+import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
 
 
 class PublisherClass<T> extends SobokuReporterClass<T> implements IStateHolder<T> {

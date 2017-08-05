@@ -1,5 +1,5 @@
-import { Listener, IReporter, IUnListener } from "../index.d";
-import * as u from "./util";
+import { Listener, IReporter, IUnListener, Reporter } from "../../index.d";
+import * as u from "../util";
 
 
 class UnListenerClass<T> implements IUnListener {
@@ -58,4 +58,8 @@ export class SobokuReporterClass<T> implements IReporter<T> {
         return this.listeners.length;
     }
 
+}
+
+export function reporter<T>(): Reporter<T> {
+    return new SobokuReporterClass();
 }

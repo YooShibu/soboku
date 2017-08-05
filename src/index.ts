@@ -1,4 +1,6 @@
-export { gate, reporter, state } from "./soboku"
+export { state } from "./soboku"
+export { reporter } from "./reporter/reporter"
+export { gate } from "./reporter/gate"
 export { sarray } from "./sarray"
 export { combine } from "./calc/combine"
 export { dependency } from "./calc/dependency"

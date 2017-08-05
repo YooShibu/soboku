@@ -118,6 +118,9 @@ class SobokuReporterClass {
         return this.listeners.length;
     }
 }
+function reporter() {
+    return new SobokuReporterClass();
+}
 
 class StateClass extends SobokuReporterClass {
     constructor(state) {
@@ -140,11 +143,21 @@ class StateHolderClass {
         return this.state;
     }
 }
+function state(initial) {
+    return new StateClass(initial);
+}
+function convAtomToStateHolder(atom) {
+    if (isStateHolder(atom)) {
+        return atom;
+    }
+    return new StateHolderClass(atom);
+}
+
 class GateClass extends SobokuReporterClass {
-    constructor(gatekeeper, reporter) {
+    constructor(gatekeeper, reporter$$1) {
         super();
         this.gatekeeper = gatekeeper;
-        reporter.report(this.listener, this);
+        reporter$$1.report(this.listener, this);
     }
     listener(val) {
         if (this.gatekeeper.s()) {
@@ -152,20 +165,8 @@ class GateClass extends SobokuReporterClass {
         }
     }
 }
-function reporter() {
-    return new SobokuReporterClass();
-}
-function state(initial) {
-    return new StateClass(initial);
-}
-function gate(gatekeeper, reporter) {
-    return new GateClass(gatekeeper, reporter);
-}
-function convAtomToStateHolder(atom) {
-    if (isStateHolder(atom)) {
-        return atom;
-    }
-    return new StateHolderClass(atom);
+function gate(gatekeeper, reporter$$1) {
+    return new GateClass(gatekeeper, reporter$$1);
 }
 
 class SobokuArrayClass extends SobokuReporterClass {
@@ -300,12 +301,12 @@ function trigger(func, ...atoms) {
 }
 
 class PublisherClass extends SobokuReporterClass {
-    constructor(permition, reporter) {
+    constructor(permition, reporter$$1) {
         super();
         this.permition = permition;
-        this.reporter = reporter;
+        this.reporter = reporter$$1;
         permition.report(this.permitionChanged, this);
-        reporter.report(this.publish, this);
+        reporter$$1.report(this.publish, this);
     }
     s() {
         return this.reporter.s();
@@ -319,14 +320,14 @@ class PublisherClass extends SobokuReporterClass {
             this.next(this.reporter.s());
     }
 }
-function publisher(permition, reporter) {
-    return new PublisherClass(permition, reporter);
+function publisher(permition, reporter$$1) {
+    return new PublisherClass(permition, reporter$$1);
 }
 
 class TimerObservable {
     constructor(ms) {
-        this.input = reporter();
-        this.output = reporter();
+        this.input = state(false);
+        this.output = new SobokuReporterClass();
         this.cb = () => this.output.next(Date.now());
         this.isEmitting = false;
         const _ms = this.ms = convAtomToStateHolder(ms);
@@ -355,17 +356,58 @@ class IntervalObservable extends TimerObservable {
         }
     }
 }
+class TimeoutObservable extends TimerObservable {
+    fire(trigger, ms) {
+        clearTimeout(this.timer);
+        if (trigger) {
+            this.timer = setTimeout(this.cb, ms);
+        }
+    }
+}
 function interval(ms) {
     return new IntervalObservable(ms);
 }
+function timeout(ms) {
+    return new TimeoutObservable(ms);
+}
 
-exports.gate = gate;
-exports.reporter = reporter;
+function isEqual(x, y) {
+    return x === y;
+}
+class SequenceEqualClass {
+    constructor(sequence, compare = isEqual) {
+        this.input = new SobokuReporterClass();
+        this.output = new SobokuReporterClass();
+        this.i = 0;
+        this.compare = compare;
+        this.sequence = sequence;
+        this.input.report(this.checkInput, this);
+    }
+    checkInput(val) {
+        const sequence = this.sequence;
+        if (this.compare(sequence[this.i], val) === false) {
+            this.i = 0;
+            return;
+        }
+        if (++this.i === sequence.length) {
+            this.i = 0;
+            this.output.next(true);
+        }
+    }
+}
+function sequenceEqual(sequence, compareFunc) {
+    return new SequenceEqualClass(sequence, compareFunc);
+}
+
 exports.state = state;
+exports.reporter = reporter;
+exports.gate = gate;
 exports.sarray = sarray;
 exports.combine = combine;
 exports.dependency = dependency;
 exports.trigger = trigger;
 exports.publisher = publisher;
 exports.interval = interval;
+exports.timeout = timeout;
+exports.sequenceEqual = sequenceEqual;
 //# sourceMappingURL=soboku.js.map
