@@ -10,17 +10,27 @@ const entry = path.resolve("./src/index.ts");
 rollup({
     entry,
     plugins: [
-        tsp({ typescript })
+        tsp({ typescript, target: "ES2015" })
+    ]
+}).then(val => {
+    val.write({
+        dest: path.resolve("./dist/soboku.mjs"),
+        format: "es",
+        sourceMap: true
+    });
+});
+
+
+rollup({
+    entry,
+    plugins: [
+        tsp({ typescript, target: "ES3" })
     ]
 }).then(val => {
     val.write({
         dest: path.resolve("./dist/soboku.js"),
-        sourceMap: true,
-        format: "cjs"
-    });
-    val.write({
-        dest: path.resolve("./dist/soboku.mjs"),
-        format: "es"
+        format: "cjs",
+        sourceMap: true
     });
 });
 
@@ -38,4 +48,4 @@ rollup({
         moduleName: "soboku",
         sourceMap: true
     });
-})
+});

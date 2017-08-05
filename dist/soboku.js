@@ -2,27 +2,33 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
+function __extends(d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
 function optimizeCB(func) {
     switch (func.length) {
         case 1:
-            return (args) => func(args[0]);
+            return function (args) { return func(args[0]); };
         case 2:
-            return (args) => func(args[0], args[1]);
+            return function (args) { return func(args[0], args[1]); };
         case 3:
-            return (args) => func(args[0], args[1], args[2]);
+            return function (args) { return func(args[0], args[1], args[2]); };
         case 4:
-            return (args) => func(args[0], args[1], args[2], args[3]);
+            return function (args) { return func(args[0], args[1], args[2], args[3]); };
         default:
-            return (args) => func.apply(undefined, args);
+            return function (args) { return func.apply(undefined, args); };
     }
 }
 function has(obj, key) {
     return Object.prototype.hasOwnProperty.call(obj, key);
 }
 function unique(arr) {
-    const result = [];
-    for (let i = 0; arr.length > i; ++i) {
-        const val = arr[i];
+    var result = [];
+    for (var i = 0; arr.length > i; ++i) {
+        var val = arr[i];
         if (indexOf(result, val) === -1) {
             result.push(val);
         }
@@ -31,7 +37,7 @@ function unique(arr) {
 }
 
 function indexOf(arr, val) {
-    for (let i = 0; arr.length > i; ++i) {
+    for (var i = 0; arr.length > i; ++i) {
         if (arr[i] === val) {
             return i;
         }
@@ -42,21 +48,21 @@ function spliceOne(arr, index) {
     if (0 > index) {
         return;
     }
-    for (let i = index, j = index + 1; arr.length > j; ++i, ++j) {
+    for (var i = index, j = index + 1; arr.length > j; ++i, ++j) {
         arr[i] = arr[j];
     }
     arr.pop();
 }
 function map(arr, iteratee) {
-    const result = [];
-    for (let i = 0; arr.length > i; ++i) {
+    var result = [];
+    for (var i = 0; arr.length > i; ++i) {
         result.push(iteratee(arr[i]));
     }
     return result;
 }
 function mapObj(obj, iteratee) {
-    const result = {};
-    for (let key in obj) {
+    var result = {};
+    for (var key in obj) {
         result[key] = iteratee(obj[key]);
     }
     return result;
@@ -71,78 +77,85 @@ function isDepends(x) {
     return isSobokuReporter(x) && has(x, "depends");
 }
 
-class UnListenerClass {
-    constructor(listeners, listener) {
+var UnListenerClass = (function () {
+    function UnListenerClass(listeners, listener) {
         this.listeners = listeners;
         this.listener = listener;
     }
-    unsubscribe() {
-        const listeners = this.listeners;
+    UnListenerClass.prototype.unsubscribe = function () {
+        var listeners = this.listeners;
         if (listeners === null) {
             return;
         }
-        const i = indexOf(listeners, this.listener);
+        var i = indexOf(listeners, this.listener);
         spliceOne(listeners, i);
         this.listeners = null;
         this.listener = null;
-    }
-}
-class SobokuListenerClass {
-    constructor(listener, thisArg) {
+    };
+    return UnListenerClass;
+}());
+var SobokuListenerClass = (function () {
+    function SobokuListenerClass(listener, thisArg) {
         this.listener = listener;
         this.thisArg = thisArg;
         if (typeof listener !== "function") {
             throw new TypeError("'listener' must be a function");
         }
     }
-    gets(news) {
+    SobokuListenerClass.prototype.gets = function (news) {
         this.listener.call(this.thisArg, news);
-    }
-}
-class SobokuReporterClass {
-    constructor() {
+    };
+    return SobokuListenerClass;
+}());
+var SobokuReporterClass = (function () {
+    function SobokuReporterClass() {
         this.listeners = [];
     }
-    next(val) {
-        const listeners = this.listeners;
-        for (let i = 0; listeners.length > i; ++i)
+    SobokuReporterClass.prototype.next = function (val) {
+        var listeners = this.listeners;
+        for (var i = 0; listeners.length > i; ++i)
             listeners[i].gets(val);
         return val;
-    }
-    report(listener, thisArg) {
-        const _listener = new SobokuListenerClass(listener, thisArg);
+    };
+    SobokuReporterClass.prototype.report = function (listener, thisArg) {
+        var _listener = new SobokuListenerClass(listener, thisArg);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
-    }
-    listenerCount() {
+    };
+    SobokuReporterClass.prototype.listenerCount = function () {
         return this.listeners.length;
-    }
-}
+    };
+    return SobokuReporterClass;
+}());
 function reporter() {
     return new SobokuReporterClass();
 }
 
-class StateClass extends SobokuReporterClass {
-    constructor(state) {
-        super();
-        this.state = state;
+var StateClass = (function (_super) {
+    __extends(StateClass, _super);
+    function StateClass(state) {
+        var _this = _super.call(this) || this;
+        _this.state = state;
+        return _this;
     }
-    next(val) {
+    StateClass.prototype.next = function (val) {
         this.state = val;
-        return super.next(val);
-    }
-    s() {
+        return _super.prototype.next.call(this, val);
+    };
+    StateClass.prototype.s = function () {
         return this.state;
-    }
-}
-class StateHolderClass {
-    constructor(state) {
+    };
+    return StateClass;
+}(SobokuReporterClass));
+var StateHolderClass = (function () {
+    function StateHolderClass(state) {
         this.state = state;
     }
-    s() {
+    StateHolderClass.prototype.s = function () {
         return this.state;
-    }
-}
+    };
+    return StateHolderClass;
+}());
 function state(initial) {
     return new StateClass(initial);
 }
@@ -153,75 +166,81 @@ function convAtomToStateHolder(atom) {
     return new StateHolderClass(atom);
 }
 
-class GateClass extends SobokuReporterClass {
-    constructor(gatekeeper, reporter$$1) {
-        super();
-        this.gatekeeper = gatekeeper;
-        reporter$$1.report(this.listener, this);
+var GateClass = (function (_super) {
+    __extends(GateClass, _super);
+    function GateClass(gatekeeper, reporter$$1) {
+        var _this = _super.call(this) || this;
+        _this.gatekeeper = gatekeeper;
+        reporter$$1.report(_this.listener, _this);
+        return _this;
     }
-    listener(val) {
+    GateClass.prototype.listener = function (val) {
         if (this.gatekeeper.s()) {
             this.next(val);
         }
-    }
-}
+    };
+    return GateClass;
+}(SobokuReporterClass));
 function gate(gatekeeper, reporter$$1) {
     return new GateClass(gatekeeper, reporter$$1);
 }
 
-class SobokuArrayClass extends SobokuReporterClass {
-    constructor(array) {
-        super();
-        this.array = [];
-        this.array = array || [];
+var SobokuArrayClass = (function (_super) {
+    __extends(SobokuArrayClass, _super);
+    function SobokuArrayClass(array) {
+        var _this = _super.call(this) || this;
+        _this.array = [];
+        _this.array = array || [];
+        return _this;
     }
-    s() {
+    SobokuArrayClass.prototype.s = function () {
         return this.array;
-    }
-    pop() {
-        const result = this.array.pop();
+    };
+    SobokuArrayClass.prototype.pop = function () {
+        var result = this.array.pop();
         this.next(this.array);
         return result;
-    }
-    push() {
-        const i = Array.prototype.push.apply(this.array, arguments);
+    };
+    SobokuArrayClass.prototype.push = function () {
+        var i = Array.prototype.push.apply(this.array, arguments);
         this.next(this.array);
         return i;
-    }
-    reverse() {
+    };
+    SobokuArrayClass.prototype.reverse = function () {
         this.array.reverse();
         this.next(this.array);
         return this.array;
-    }
-    shift() {
-        const result = this.array.shift();
+    };
+    SobokuArrayClass.prototype.shift = function () {
+        var result = this.array.shift();
         this.next(this.array);
         return result;
-    }
-    sort(compareFn) {
+    };
+    SobokuArrayClass.prototype.sort = function (compareFn) {
         this.array.sort(compareFn);
         this.next(this.array);
         return this.array;
-    }
-    splice() {
+    };
+    SobokuArrayClass.prototype.splice = function () {
         Array.prototype.splice.apply(this.array, arguments);
         this.next(this.array);
         return this.array;
-    }
-    unshift() {
-        const result = Array.prototype.unshift.apply(this.array, arguments);
+    };
+    SobokuArrayClass.prototype.unshift = function () {
+        var result = Array.prototype.unshift.apply(this.array, arguments);
         this.next(this.array);
         return result;
-    }
-}
+    };
+    return SobokuArrayClass;
+}(SobokuReporterClass));
 function sarray(array) {
     return new SobokuArrayClass(array);
 }
 
 function getDeps(atoms) {
-    let result = [];
-    for (let i = 0; atoms.length > i; ++i) {
-        const atom = atoms[i];
+    var result = [];
+    for (var i = 0; atoms.length > i; ++i) {
+        var atom = atoms[i];
         if (isDepends(atom)) {
             result = result.concat(atom.depends);
         }
@@ -234,142 +253,181 @@ function getDeps(atoms) {
 function getState(sh) {
     return sh.s();
 }
-class CalcClass extends SobokuReporterClass {
-    constructor(atoms) {
-        super();
-        const depends = this.depends = getDeps(atoms);
-        const listener = this.listener;
-        for (let i = 0; depends.length > i; ++i) {
-            depends[i].report(listener, this);
+var CalcClass = (function (_super) {
+    __extends(CalcClass, _super);
+    function CalcClass(atoms) {
+        var _this = _super.call(this) || this;
+        var depends = _this.depends = getDeps(atoms);
+        var listener = _this.listener;
+        for (var i = 0; depends.length > i; ++i) {
+            depends[i].report(listener, _this);
         }
+        return _this;
     }
-    listener(val) {
+    CalcClass.prototype.listener = function (val) {
         this.next(this.s());
+    };
+    
+    return CalcClass;
+}(SobokuReporterClass));
+var CalcFuncClass = (function (_super) {
+    __extends(CalcFuncClass, _super);
+    function CalcFuncClass(atoms, func) {
+        var _this = _super.call(this, atoms) || this;
+        _this.func = optimizeCB(func);
+        _this.states = map(atoms, convAtomToStateHolder);
+        return _this;
     }
-    ;
-}
-class CalcFuncClass extends CalcClass {
-    constructor(atoms, func) {
-        super(atoms);
-        this.func = optimizeCB(func);
-        this.states = map(atoms, convAtomToStateHolder);
-    }
-    s() {
-        const args = map(this.states, getState);
+    CalcFuncClass.prototype.s = function () {
+        var args = map(this.states, getState);
         return this.func(args);
-    }
-}
+    };
+    return CalcFuncClass;
+}(CalcClass));
 
-class CombineClass extends CalcClass {
-    constructor(atomObj) {
-        const atoms = [];
-        for (let key in atomObj) {
+var CombineClass = (function (_super) {
+    __extends(CombineClass, _super);
+    function CombineClass(atomObj) {
+        var _this = this;
+        var atoms = [];
+        for (var key in atomObj) {
             atoms.push(atomObj[key]);
         }
-        super(atoms);
-        this.shObj = mapObj(atomObj, convAtomToStateHolder);
+        _this = _super.call(this, atoms) || this;
+        _this.shObj = mapObj(atomObj, convAtomToStateHolder);
+        return _this;
     }
-    s() {
+    CombineClass.prototype.s = function () {
         return mapObj(this.shObj, getState);
-    }
-}
+    };
+    return CombineClass;
+}(CalcClass));
 function combine(atomObj) {
     return new CombineClass(atomObj);
 }
 
-class DependencyClass extends CalcFuncClass {
-    constructor(atoms, func) {
-        super(atoms, func);
+var DependencyClass = (function (_super) {
+    __extends(DependencyClass, _super);
+    function DependencyClass(atoms, func) {
+        return _super.call(this, atoms, func) || this;
     }
-}
-function dependency(func, ...atoms) {
+    return DependencyClass;
+}(CalcFuncClass));
+function dependency(func) {
+    var atoms = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        atoms[_i - 1] = arguments[_i];
+    }
     return new DependencyClass(atoms, func);
 }
 
-class TriggerClass extends CalcFuncClass {
-    constructor(atoms, func) {
-        super(atoms, func);
+var TriggerClass = (function (_super) {
+    __extends(TriggerClass, _super);
+    function TriggerClass(atoms, func) {
+        return _super.call(this, atoms, func) || this;
     }
-    listener() {
-        const s = this.s();
+    TriggerClass.prototype.listener = function () {
+        var s = this.s();
         if (s)
             this.next(s);
+    };
+    return TriggerClass;
+}(CalcFuncClass));
+function trigger(func) {
+    var atoms = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        atoms[_i - 1] = arguments[_i];
     }
-}
-function trigger(func, ...atoms) {
     return new TriggerClass(atoms, func);
 }
 
-class PublisherClass extends SobokuReporterClass {
-    constructor(permition, reporter$$1) {
-        super();
-        this.permition = permition;
-        this.reporter = reporter$$1;
-        permition.report(this.permitionChanged, this);
-        reporter$$1.report(this.publish, this);
+var PublisherClass = (function (_super) {
+    __extends(PublisherClass, _super);
+    function PublisherClass(permition, reporter$$1) {
+        var _this = _super.call(this) || this;
+        _this.permition = permition;
+        _this.reporter = reporter$$1;
+        permition.report(_this.permitionChanged, _this);
+        reporter$$1.report(_this.publish, _this);
+        return _this;
     }
-    s() {
+    PublisherClass.prototype.s = function () {
         return this.reporter.s();
-    }
-    publish(val) {
+    };
+    PublisherClass.prototype.publish = function (val) {
         if (this.permition.s())
             this.next(val);
-    }
-    permitionChanged(permition) {
+    };
+    PublisherClass.prototype.permitionChanged = function (permition) {
         if (permition)
             this.next(this.reporter.s());
-    }
-}
+    };
+    return PublisherClass;
+}(SobokuReporterClass));
 function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-class SObservable {
-    constructor() {
+var SObservable = (function () {
+    function SObservable() {
         this.output = new SobokuReporterClass();
     }
-}
+    return SObservable;
+}());
 
-class TimerObservable extends SObservable {
-    constructor(ms) {
-        super();
-        this.input = state(false);
-        this.cb = () => this.output.next(Date.now());
-        this.isRunning = false;
-        const _ms = this.ms = convAtomToStateHolder(ms);
-        this.input.report(this.fireTimer, this);
+var TimerObservable = (function (_super) {
+    __extends(TimerObservable, _super);
+    function TimerObservable(ms) {
+        var _this = _super.call(this) || this;
+        _this.input = state(false);
+        _this.cb = function () { return _this.output.next(Date.now()); };
+        _this.isRunning = false;
+        var _ms = _this.ms = convAtomToStateHolder(ms);
+        _this.input.report(_this.fireTimer, _this);
         if (isSobokuReporter(_ms))
-            _ms.report(this.msChanged, this);
+            _ms.report(_this.msChanged, _this);
+        return _this;
     }
-    msChanged(ms) {
+    TimerObservable.prototype.msChanged = function (ms) {
         if (this.isRunning) {
             this.fireTimer(false);
             this.fireTimer(true, ms);
         }
-    }
-    fireTimer(trigger, ms) {
+    };
+    TimerObservable.prototype.fireTimer = function (trigger, ms) {
         this.fire(trigger, ms || this.ms.s());
         this.isRunning = trigger;
+    };
+    return TimerObservable;
+}(SObservable));
+var IntervalObservable = (function (_super) {
+    __extends(IntervalObservable, _super);
+    function IntervalObservable() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-}
-class IntervalObservable extends TimerObservable {
-    fire(trigger, ms) {
+    IntervalObservable.prototype.fire = function (trigger, ms) {
         if (trigger === false) {
             clearInterval(this.timer);
         }
         else if (this.isRunning === false) {
             this.timer = setInterval(this.cb, ms);
         }
+    };
+    return IntervalObservable;
+}(TimerObservable));
+var TimeoutObservable = (function (_super) {
+    __extends(TimeoutObservable, _super);
+    function TimeoutObservable() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-}
-class TimeoutObservable extends TimerObservable {
-    fire(trigger, ms) {
+    TimeoutObservable.prototype.fire = function (trigger, ms) {
         clearTimeout(this.timer);
         if (trigger) {
             this.timer = setTimeout(this.cb, ms);
         }
-    }
-}
+    };
+    return TimeoutObservable;
+}(TimerObservable));
 function interval(ms) {
     return new IntervalObservable(ms);
 }
@@ -380,17 +438,20 @@ function timeout(ms) {
 function isEqual(x, y) {
     return x === y;
 }
-class SequenceEqualClass extends SObservable {
-    constructor(sequence, compare = isEqual) {
-        super();
-        this.input = new SobokuReporterClass();
-        this.i = 0;
-        this.compare = compare;
-        this.sequence = sequence;
-        this.input.report(this.checkInput, this);
+var SequenceEqualClass = (function (_super) {
+    __extends(SequenceEqualClass, _super);
+    function SequenceEqualClass(sequence, compare) {
+        if (compare === void 0) { compare = isEqual; }
+        var _this = _super.call(this) || this;
+        _this.input = new SobokuReporterClass();
+        _this.i = 0;
+        _this.compare = compare;
+        _this.sequence = sequence;
+        _this.input.report(_this.checkInput, _this);
+        return _this;
     }
-    checkInput(val) {
-        const sequence = this.sequence;
+    SequenceEqualClass.prototype.checkInput = function (val) {
+        var sequence = this.sequence;
         if (this.compare(sequence[this.i], val) === false) {
             this.i = 0;
             return;
@@ -399,8 +460,9 @@ class SequenceEqualClass extends SObservable {
             this.i = 0;
             this.output.next(true);
         }
-    }
-}
+    };
+    return SequenceEqualClass;
+}(SObservable));
 function sequenceEqual(sequence, compareFunc) {
     return new SequenceEqualClass(sequence, compareFunc);
 }

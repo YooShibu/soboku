@@ -402,3 +402,4 @@ function sequenceEqual(sequence, compareFunc) {
 }
 
 export { state, reporter, gate, sarray, combine, dependency, trigger, publisher, interval, timeout, sequenceEqual };
+//# sourceMappingURL=soboku.mjs.map
