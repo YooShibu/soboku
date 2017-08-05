@@ -1,7 +1,7 @@
 {
   "name": "soboku",
   "version": "0.3.4",
-  "description": "managing small state",
+  "description": "tiny reactive programming package",
   "main": "dist/soboku.js",
   "dependencies": {},
   "devDependencies": {
