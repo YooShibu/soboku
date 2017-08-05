@@ -11,48 +11,58 @@ A javascript package to manage the app state.
     npm install soboku
 
 ## Example
+A countdown timer
 ~~~ typescript
-import { state, combine, dependency, on, setState, getState } from "soboku"
+import { state, gate, dependency, trigger, interval } from "soboku"
 
-const first = state(""),
-      last = state(""),
-      full = dependency((f, l) => `${f} ${l}`.trim(), first, last),
-      name = combine({ first, last, full });
 
-const log = console.log;
+// -----------------------------------------
+// Prepere countdown timer
+// -----------------------------------------
 
-log(getState(name));
-// { first: "", last: "", full: "" }
+function isZero(x: number) {
+    return x === 0;
+}
 
-on(full, log);
-on(name, log);
+function isGreaterThan0(x: number) {
+    return x > 0;
+}
 
-setState(first, "Nobunaga");
-// Nobunaga
-// { first: "Nobunaga", last: "", full: "Nobunaga" }
+function getTimerMessage(isRunning: boolean) {
+    return isRunning ? "Start!" : "Done!";
+}
 
-setState(last, "Oda");
-// Nobunaga Oda
-// { first: "Nobunaga", last: "Oda", full: "Nobunaga Oda" }
+const _count = state(3),
+      decCount = () => _count.next(_count.s() - 1),
+      isEnd = trigger(isZero, _count),
+      isCountGreaterThan0 = trigger(isGreaterThan0, _count),
+      count = gate(isCountGreaterThan0, _count),
+      timer = interval(1000),
+      timerMessage = dependency(getTimerMessage, timer.input);
+      
+count.report(console.log);
+timerMessage.report(console.log);
+timer.output.report(decCount);
+isEnd.report(end => timer.input.next(!end));
+
+
+// -----------------------------------------
+// Start countdown timer
+// -----------------------------------------
+
+timer.input.next(true);
+// Start!
+// 2
+// 1
+// Done!
 
 ~~~
 
 ## API
 
 ### `state<T>(initial: T): State<T>`
-### `setState<T>(state: State<T>, currentState: T): T`
-### `getState(soboku: Soboku<T>): T`
-### `dependency<T>(func: (...sobokus: Soboku<any>[]) => T, ...sobokus: Soboku<any>[]): Calc<T>`
-### `combine<T>(sobokuObj: { [K in keyof T]: Soboku<T[K]> }): Calc<T>`
-### `mirror<T>(state: State<T>): Calc<T>`
-### `on<T>(prop: SobokuProp<T>, listener: (val: T) => void)`
-### `removeListener<T>(prop: SobokuProp<T>, listener: (val: T) => void)`
-
-## Top-Level API
-
-### `emitListener<T>(prop: SobokuProp<T>, value: T): void`
-### `getSobokuProp<T>(): SobokuProp<T>`
-### `assignSobokuProp<T, U>(props: U): SobokuProp<T> & U`
+### `dependency<T>(func: (...atoms: Atom<any>[]) => T, ...atoms: Atom<any>[]): Calc<T>`
+### `combine<T>(sobokuObj: { [K in keyof T]: Atom<T[K]> }): Calc<T>`
 
 ## LICENSE
 MIT
