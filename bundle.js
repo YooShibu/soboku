@@ -33,7 +33,7 @@ rollup({
     ],
 }).then(val => {
     val.write({
-        dest: path.resolve("./dist/soboku.browser.min.js"),
+        dest: path.resolve("./dist/soboku.min.js"),
         format: "iife",
         moduleName: "soboku",
         sourceMap: true
