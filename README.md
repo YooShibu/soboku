@@ -41,9 +41,9 @@ const _count = state(3),
       _isEnd = editer((x: number) => x === 0, [_count]),
       isEnd = trigger(_isEnd);
       isRunning = ntrigger(_isEnd),
-      count = gate(isCountGreaterThan0, _count),
+      count = gate(isRunning, _count),
       timer = interval(1000),
-      timerMessage = editer(getTimerMessage, timer.input);
+      timerMessage = editer(getTimerMessage, [timer.input]);
       
 count.report(console.log);
 timerMessage.report(console.log);
