@@ -1,12 +1,14 @@
 import { Atom, Calc, IStateHolder } from "../../index.d";
+import { SobokuReporterClass } from "../reporter/reporter";
 import * as u from "../util";
-import { CalcFuncClass, getState } from "./calc";
+import { getState } from "./calc";
 
 
-class TriggerClass extends CalcFuncClass<boolean> {
+class TriggerClass extends SobokuReporterClass<boolean> implements IStateHolder<boolean> {
 
-    constructor(atoms: Atom<any>[], func: (...args: any[]) => boolean) {
-        super(atoms, func);
+    constructor(private readonly condition: Calc<boolean>) {
+        super();
+        condition.report(this.listener, this);
     }
 
     public listener() {
@@ -15,8 +17,24 @@ class TriggerClass extends CalcFuncClass<boolean> {
             this.next(s);
     }
 
+    public s() {
+        return this.condition.s();
+    }
+
 }
 
-export function trigger(func: (...args: any[]) => boolean, ...atoms: Atom<any>[]): Calc<boolean> {
-    return new TriggerClass(atoms, func);
+class NTriggerClass extends TriggerClass {
+
+    public s() {
+        return !super.s()
+    }
+    
+}
+
+export function trigger(condition: Calc<boolean>): Calc<boolean> {
+    return new TriggerClass(condition);
+}
+
+export function ntrigger(condition: Calc<boolean>): Calc<boolean> {
+    return new NTriggerClass(condition);
 }

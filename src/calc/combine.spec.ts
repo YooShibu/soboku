@@ -1,5 +1,5 @@
 import { combine } from "./combine";
-import { dependency } from "./dependency";
+import { editer } from "./editer";
 import { state } from "../state/state";
 import { gate } from "../reporter/gate";
 import { spyOnAll } from "../helper/helper";
@@ -9,7 +9,7 @@ describe("combine", () => {
     it("should combine atoms to object", () => {
         const first = state("");
         const last = state("");
-        const full = dependency((f: string, l: string) => `${f} ${l}`.trim(), first, last);
+        const full = editer((f: string, l: string) => `${f} ${l}`.trim(), [first, last]);
         const name = combine({ first, last, full, age: 10 });
         expect(name.s()).toEqual({
             first: "", last: "", full: "", age: 10
@@ -18,7 +18,7 @@ describe("combine", () => {
     it("should emit listener some state updated", () => {
         const first = state("");
         const last = state("");
-        const full = dependency((f: string, l: string) => `${f} ${l}`.trim(), first, last);
+        const full = editer((f: string, l: string) => `${f} ${l}`.trim(), [first, last]);
         const name = combine({ first, last, full });
         const postcode = state("");
         const address = combine({ postcode });

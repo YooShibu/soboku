@@ -244,17 +244,6 @@ class CalcClass extends SobokuReporterClass {
     }
     ;
 }
-class CalcFuncClass extends CalcClass {
-    constructor(atoms, func) {
-        super(atoms);
-        this.func = optimizeCB(func);
-        this.states = map(atoms, convAtomToStateHolder);
-    }
-    s() {
-        const args = map(this.states, getState);
-        return this.func(args);
-    }
-}
 
 class CombineClass extends CalcClass {
     constructor(atomObj) {
@@ -273,27 +262,46 @@ function combine(atomObj) {
     return new CombineClass(atomObj);
 }
 
-class DependencyClass extends CalcFuncClass {
-    constructor(atoms, func) {
-        super(atoms, func);
+class EditerClass extends CalcClass {
+    constructor(func, atoms) {
+        super(atoms);
+        this.func = optimizeCB(func);
+        this.states = map(atoms, convAtomToStateHolder);
+    }
+    s() {
+        const args = map(this.states, getState);
+        return this.func(args);
     }
 }
-function dependency(func, ...atoms) {
-    return new DependencyClass(atoms, func);
+function editer(func, atoms) {
+    return new EditerClass(func, atoms);
 }
 
-class TriggerClass extends CalcFuncClass {
-    constructor(atoms, func) {
-        super(atoms, func);
+class TriggerClass extends SobokuReporterClass {
+    constructor(condition) {
+        super();
+        this.condition = condition;
+        condition.report(this.listener, this);
     }
     listener() {
         const s = this.s();
         if (s)
             this.next(s);
     }
+    s() {
+        return this.condition.s();
+    }
 }
-function trigger(func, ...atoms) {
-    return new TriggerClass(atoms, func);
+class NTriggerClass extends TriggerClass {
+    s() {
+        return !super.s();
+    }
+}
+function trigger(condition) {
+    return new TriggerClass(condition);
+}
+function ntrigger(condition) {
+    return new NTriggerClass(condition);
 }
 
 class PublisherClass extends SobokuReporterClass {
@@ -401,5 +409,5 @@ function sequenceEqual(sequence, compareFunc) {
     return new SequenceEqualClass(sequence, compareFunc);
 }
 
-export { state, reporter, gate, sarray, combine, dependency, trigger, publisher, interval, timeout, sequenceEqual };
+export { state, reporter, gate, sarray, combine, editer, trigger, ntrigger, publisher, interval, timeout, sequenceEqual };
 //# sourceMappingURL=soboku.mjs.map

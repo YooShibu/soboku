@@ -25,20 +25,12 @@ Browser
 A countdown timer
 
 ~~~ typescript
-import { state, gate, dependency, trigger, interval } from "soboku"
+import { state, gate, editer, trigger, ntrigger, interval } from "soboku"
 
 
 // -----------------------------------------
 // Prepere countdown timer
 // -----------------------------------------
-
-function isZero(x: number): boolean {
-    return x === 0;
-}
-
-function isGreaterThan0(x: number): boolean {
-    return x > 0;
-}
 
 function getTimerMessage(isRunning: boolean) {
     return isRunning ? "Start!" : "Done!";
@@ -46,11 +38,12 @@ function getTimerMessage(isRunning: boolean) {
 
 const _count = state(3),
       decCount = () => _count.next(_count.s() - 1),
-      isEnd = trigger(isZero, _count),
-      isCountGreaterThan0 = trigger(isGreaterThan0, _count),
+      _isEnd = editer((x: number) => x === 0, [_count]),
+      isEnd = trigger(_isEnd);
+      isRunning = ntrigger(_isEnd),
       count = gate(isCountGreaterThan0, _count),
       timer = interval(1000),
-      timerMessage = dependency(getTimerMessage, timer.input);
+      timerMessage = editer(getTimerMessage, timer.input);
       
 count.report(console.log);
 timerMessage.report(console.log);
@@ -120,10 +113,10 @@ nums.push(4);
 ~~~
 
 
-#### `dependency<T>(func: (...atoms: Atom<any>[]) => T, ...atoms: Atom<any>[]): Calc<T>`
+#### `editer<T>(func: (...atoms: Atom<any>[]) => T, atoms: Atom<any>[]): Calc<T>`
 
 ~~~ typescript
-import { state, dependency } from "soboku"
+import { state, editer } from "soboku"
 
 function twice(num: number): number {
     return num * 2;
@@ -134,8 +127,8 @@ function add(num1: number, num2: number): number {
 }
 
 const x = state(10);
-const y = dependency(twice, x);
-const z = dependency(add, x, y);
+const y = editer(twice, [x]);
+const z = editer(add, [x, y]);
 console.log(z.s()) // 30
 
 z.report(console.log);
@@ -183,24 +176,38 @@ source.next(2);
 // 2
 ~~~
 
-#### `trigger(predicate: (...atoms: Atom<any>[]), ...atoms<any>[]): Calc<boolean>`
+#### `trigger(conditon: Calc<boolean>): Calc<boolean>`
 
 ~~~ typescript
 import { state, trigger } from "soboku"
 
-function isGreaterThan10(x: number): boolean {
-    return x > 10;
-}
-
-const count = state(0);
-const isDone = trigger(isGreaterThan10, count);
+const complete = state(false);
+const isDone = trigger(complete);
 console.log(isDone.s()) // false
 
 isDone.report(console.log);
 
-count.next(2);
-count.next(8);
-count.next(15);
+count.next(false);
+count.next(false);
+count.next(true);
+// console
+// true
+~~~
+
+#### `ntrigger(conditon: Calc<boolean>): Calc<boolean>`
+
+~~~ typescript
+import { state, ntrigger } from "soboku"
+
+const complete = state(false);
+const isDone = ntrigger(complete);
+console.log(isDone.s()) // true
+
+isDone.report(console.log);
+
+count.next(true);
+count.next(true);
+count.next(false);
 // console
 // true
 ~~~

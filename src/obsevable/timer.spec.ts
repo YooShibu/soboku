@@ -1,11 +1,12 @@
 import { interval, timeout } from "./timer";
 import { Atom, Reporter, ISObservable, State } from "../../index.d";
 import { trigger } from "../calc/trigger";
+import { editer } from "../calc/editer";
 import { state } from "../state/state";
 
 class Counter<T extends number | State<number>> {
     private readonly count = state(0);
-    public readonly isEnd = trigger(c => c === this.times, this.count);
+    public readonly isEnd = trigger(editer(c => c === this.times, [this.count]));
     public readonly ms: T;
     public readonly timer: ISObservable<State<boolean>, number>;
     private readonly times: number;

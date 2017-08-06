@@ -1,6 +1,6 @@
 import { publisher } from "./publisher";
 import { state } from "../state/state";
-import { dependency } from "./dependency";
+import { editer } from "./editer";
 import { IDefaultSpy, defaultSpy } from "../helper/helper";
 
 function every(...args: any[]) {
@@ -15,7 +15,7 @@ describe("publisher", () => {
         const _num = state(10);
         const work1 = state(false);
         const work2 = state(false);
-        const complete = dependency(every, work1, work2);
+        const complete = editer(every, [work1, work2]);
         const num = publisher(complete, _num);
         num.report(r.f);
 

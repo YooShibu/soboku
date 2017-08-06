@@ -270,20 +270,6 @@ var CalcClass = (function (_super) {
     
     return CalcClass;
 }(SobokuReporterClass));
-var CalcFuncClass = (function (_super) {
-    __extends(CalcFuncClass, _super);
-    function CalcFuncClass(atoms, func) {
-        var _this = _super.call(this, atoms) || this;
-        _this.func = optimizeCB(func);
-        _this.states = map(atoms, convAtomToStateHolder);
-        return _this;
-    }
-    CalcFuncClass.prototype.s = function () {
-        var args = map(this.states, getState);
-        return this.func(args);
-    };
-    return CalcFuncClass;
-}(CalcClass));
 
 var CombineClass = (function (_super) {
     __extends(CombineClass, _super);
@@ -306,39 +292,57 @@ function combine(atomObj) {
     return new CombineClass(atomObj);
 }
 
-var DependencyClass = (function (_super) {
-    __extends(DependencyClass, _super);
-    function DependencyClass(atoms, func) {
-        return _super.call(this, atoms, func) || this;
+var EditerClass = (function (_super) {
+    __extends(EditerClass, _super);
+    function EditerClass(func, atoms) {
+        var _this = _super.call(this, atoms) || this;
+        _this.func = optimizeCB(func);
+        _this.states = map(atoms, convAtomToStateHolder);
+        return _this;
     }
-    return DependencyClass;
-}(CalcFuncClass));
-function dependency(func) {
-    var atoms = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        atoms[_i - 1] = arguments[_i];
-    }
-    return new DependencyClass(atoms, func);
+    EditerClass.prototype.s = function () {
+        var args = map(this.states, getState);
+        return this.func(args);
+    };
+    return EditerClass;
+}(CalcClass));
+function editer(func, atoms) {
+    return new EditerClass(func, atoms);
 }
 
 var TriggerClass = (function (_super) {
     __extends(TriggerClass, _super);
-    function TriggerClass(atoms, func) {
-        return _super.call(this, atoms, func) || this;
+    function TriggerClass(condition) {
+        var _this = _super.call(this) || this;
+        _this.condition = condition;
+        condition.report(_this.listener, _this);
+        return _this;
     }
     TriggerClass.prototype.listener = function () {
         var s = this.s();
         if (s)
             this.next(s);
     };
+    TriggerClass.prototype.s = function () {
+        return this.condition.s();
+    };
     return TriggerClass;
-}(CalcFuncClass));
-function trigger(func) {
-    var atoms = [];
-    for (var _i = 1; _i < arguments.length; _i++) {
-        atoms[_i - 1] = arguments[_i];
+}(SobokuReporterClass));
+var NTriggerClass = (function (_super) {
+    __extends(NTriggerClass, _super);
+    function NTriggerClass() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
-    return new TriggerClass(atoms, func);
+    NTriggerClass.prototype.s = function () {
+        return !_super.prototype.s.call(this);
+    };
+    return NTriggerClass;
+}(TriggerClass));
+function trigger(condition) {
+    return new TriggerClass(condition);
+}
+function ntrigger(condition) {
+    return new NTriggerClass(condition);
 }
 
 var PublisherClass = (function (_super) {
@@ -472,8 +476,9 @@ exports.reporter = reporter;
 exports.gate = gate;
 exports.sarray = sarray;
 exports.combine = combine;
-exports.dependency = dependency;
+exports.editer = editer;
 exports.trigger = trigger;
+exports.ntrigger = ntrigger;
 exports.publisher = publisher;
 exports.interval = interval;
 exports.timeout = timeout;

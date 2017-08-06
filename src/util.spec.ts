@@ -1,7 +1,7 @@
 import * as u from "./util";
 import { state } from "./state/state";
 import { reporter } from "./reporter/reporter";
-import { dependency } from "./calc/dependency";
+import { editer } from "./calc/editer";
 import { spyOnAll, twice } from "./helper/helper";
 
 
@@ -123,7 +123,7 @@ describe("util", () => {
     describe("isDepends", () => {
        it("should return true if argument is Depends", () => {
            const s = state(10);
-           const d = dependency(twice, s);
+           const d = editer(twice, [s]);
            expect(u.isDepends(d)).toBeTruthy();
            expect(u.isDepends(s)).toBeFalsy();
        }); 

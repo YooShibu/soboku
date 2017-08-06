@@ -22,7 +22,7 @@ export function getState<T>(sh: IStateHolder<T>): T {
     return sh.s();
 }
 
-export abstract class CalcClass<T> extends SobokuReporterClass<T> {
+export abstract class CalcClass<T> extends SobokuReporterClass<T> implements IStateHolder<T> {
     private readonly depends: SobokuReporterClass<any>[];
 
     constructor(atoms: Atom<any>[]) {
@@ -35,25 +35,9 @@ export abstract class CalcClass<T> extends SobokuReporterClass<T> {
     }
 
     public abstract s(): T;
+    
     public listener(val: T): void {
         this.next(this.s());
     };
     
-}
-
-export abstract class CalcFuncClass<T> extends CalcClass<T> {
-    private readonly func: (args: any[]) => T;
-    private readonly states: IStateHolder<any>[];
-
-    constructor(atoms: Atom<any>[], func: (...args: any[]) => T) {
-        super(atoms);
-        this.func = u.optimizeCB(func);
-        this.states = u.map(atoms, convAtomToStateHolder);
-    }
-
-    public s(): T {
-        const args = u.map(this.states, getState);
-        return this.func(args);
-    }
-
 }
