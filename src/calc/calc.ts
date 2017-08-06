@@ -22,8 +22,8 @@ export function getState<T>(sh: IStateHolder<T>): T {
     return sh.s();
 }
 
-export abstract class CalcClass<T> extends SobokuReporterClass<T> implements IStateHolder<T> {
-    private readonly depends: SobokuReporterClass<any>[];
+export abstract class CalcClass<T> extends SobokuReporterClass<T> implements IStateHolder<T>, Depends {
+    public readonly depends: SobokuReporterClass<any>[];
 
     constructor(atoms: Atom<any>[]) {
         super();
@@ -35,7 +35,7 @@ export abstract class CalcClass<T> extends SobokuReporterClass<T> implements ISt
     }
 
     public abstract s(): T;
-    
+
     public listener(val: T): void {
         this.next(this.s());
     };
