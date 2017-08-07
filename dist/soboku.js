@@ -102,7 +102,7 @@ var SobokuListenerClass = (function () {
             throw new TypeError("'listener' must be a function");
         }
     }
-    SobokuListenerClass.prototype.gets = function (news) {
+    SobokuListenerClass.prototype.read = function (news) {
         this.listener.call(this.thisArg, news);
     };
     return SobokuListenerClass;
@@ -114,11 +114,13 @@ var SobokuReporterClass = (function () {
     SobokuReporterClass.prototype.next = function (val) {
         var listeners = this.listeners;
         for (var i = 0; listeners.length > i; ++i)
-            listeners[i].gets(val);
+            listeners[i].read(val);
         return val;
     };
-    SobokuReporterClass.prototype.report = function (listener, thisArg) {
-        var _listener = new SobokuListenerClass(listener, thisArg);
+    SobokuReporterClass.prototype.report = function (listener) {
+        var _listener = listener instanceof SobokuListenerClass
+            ? listener
+            : new SobokuListenerClass(listener);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
     };
@@ -129,6 +131,9 @@ var SobokuReporterClass = (function () {
 }());
 function reporter() {
     return new SobokuReporterClass();
+}
+function listener(listener, thisArg) {
+    return new SobokuListenerClass(listener, thisArg);
 }
 
 var StateClass = (function (_super) {
@@ -171,7 +176,7 @@ var GateClass = (function (_super) {
     function GateClass(gatekeeper, reporter$$1) {
         var _this = _super.call(this) || this;
         _this.gatekeeper = gatekeeper;
-        reporter$$1.report(_this.listener, _this);
+        reporter$$1.report(new SobokuListenerClass(_this.listener, _this));
         return _this;
     }
     GateClass.prototype.listener = function (val) {
@@ -255,15 +260,18 @@ function getState(sh) {
 }
 var CalcClass = (function (_super) {
     __extends(CalcClass, _super);
-    function CalcClass(atoms) {
-        var _this = _super.call(this) || this;
-        var depends = _this.depends = getDeps(atoms);
-        var listener = _this.listener;
-        for (var i = 0; depends.length > i; ++i) {
-            depends[i].report(listener, _this);
-        }
+    function CalcClass() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.depends = [];
         return _this;
     }
+    CalcClass.prototype.addDepends = function (atoms, listener$$1) {
+        var depends = getDeps(atoms);
+        for (var i = 0; depends.length > i; ++i) {
+            depends[i].report(listener$$1);
+        }
+        this.depends.push.apply(this.depends, depends);
+    };
     CalcClass.prototype.listener = function (val) {
         this.next(this.s());
     };
@@ -274,12 +282,12 @@ var CalcClass = (function (_super) {
 var CombineClass = (function (_super) {
     __extends(CombineClass, _super);
     function CombineClass(atomObj) {
-        var _this = this;
+        var _this = _super.call(this) || this;
         var atoms = [];
         for (var key in atomObj) {
             atoms.push(atomObj[key]);
         }
-        _this = _super.call(this, atoms) || this;
+        _super.prototype.addDepends.call(_this, atoms, new SobokuListenerClass(_this.listener, _this));
         _this.shObj = mapObj(atomObj, convAtomToStateHolder);
         return _this;
     }
@@ -295,9 +303,10 @@ function combine(atomObj) {
 var EditerClass = (function (_super) {
     __extends(EditerClass, _super);
     function EditerClass(func, atoms) {
-        var _this = _super.call(this, atoms) || this;
+        var _this = _super.call(this) || this;
         _this.func = optimizeCB(func);
         _this.states = map(atoms, convAtomToStateHolder);
+        _super.prototype.addDepends.call(_this, atoms, new SobokuListenerClass(_this.listener, _this));
         return _this;
     }
     EditerClass.prototype.s = function () {
@@ -315,10 +324,11 @@ var TriggerClass = (function (_super) {
     function TriggerClass(condition) {
         var _this = _super.call(this) || this;
         _this.condition = condition;
-        condition.report(_this.listener, _this);
+        var listener$$1 = new SobokuListenerClass(_this.onConditionChanged, _this);
+        _super.prototype.addDepends.call(_this, [condition], listener$$1);
         return _this;
     }
-    TriggerClass.prototype.listener = function () {
+    TriggerClass.prototype.onConditionChanged = function () {
         var s = this.s();
         if (s)
             this.next(s);
@@ -327,7 +337,7 @@ var TriggerClass = (function (_super) {
         return this.condition.s();
     };
     return TriggerClass;
-}(SobokuReporterClass));
+}(CalcClass));
 var NTriggerClass = (function (_super) {
     __extends(NTriggerClass, _super);
     function NTriggerClass() {
@@ -351,32 +361,37 @@ var PublisherClass = (function (_super) {
         var _this = _super.call(this) || this;
         _this.permition = permition;
         _this.reporter = reporter$$1;
-        permition.report(_this.permitionChanged, _this);
-        reporter$$1.report(_this.publish, _this);
+        _this.prevPermition = permition.s();
+        _super.prototype.addDepends.call(_this, [permition], new SobokuListenerClass(_this.permitionChanged, _this));
+        _super.prototype.addDepends.call(_this, [reporter$$1], new SobokuListenerClass(_this.publish, _this));
         return _this;
     }
     PublisherClass.prototype.s = function () {
         return this.reporter.s();
     };
-    PublisherClass.prototype.publish = function (val) {
-        if (this.permition.s())
-            this.next(val);
-    };
-    PublisherClass.prototype.permitionChanged = function (permition) {
-        if (permition)
+    PublisherClass.prototype.publish = function () {
+        if (this.permition.s()) {
             this.next(this.reporter.s());
+        }
+    };
+    PublisherClass.prototype.permitionChanged = function () {
+        var permition = this.permition.s();
+        if (permition && this.prevPermition === false) {
+            this.next(this.reporter.s());
+        }
+        this.prevPermition = permition;
     };
     return PublisherClass;
-}(SobokuReporterClass));
+}(CalcClass));
 function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-var SObservable = (function () {
-    function SObservable() {
+var SObservableClass = (function () {
+    function SObservableClass() {
         this.output = new SobokuReporterClass();
     }
-    return SObservable;
+    return SObservableClass;
 }());
 
 var TimerObservable = (function (_super) {
@@ -387,9 +402,9 @@ var TimerObservable = (function (_super) {
         _this.cb = function () { return _this.output.next(Date.now()); };
         _this.isRunning = false;
         var _ms = _this.ms = convAtomToStateHolder(ms);
-        _this.input.report(_this.fireTimer, _this);
+        _this.input.report(new SobokuListenerClass(_this.fireTimer, _this));
         if (isSobokuReporter(_ms))
-            _ms.report(_this.msChanged, _this);
+            _ms.report(new SobokuListenerClass(_this.msChanged, _this));
         return _this;
     }
     TimerObservable.prototype.msChanged = function (ms) {
@@ -403,7 +418,7 @@ var TimerObservable = (function (_super) {
         this.isRunning = trigger;
     };
     return TimerObservable;
-}(SObservable));
+}(SObservableClass));
 var IntervalObservable = (function (_super) {
     __extends(IntervalObservable, _super);
     function IntervalObservable() {
@@ -451,7 +466,7 @@ var SequenceEqualClass = (function (_super) {
         _this.i = 0;
         _this.compare = compare;
         _this.sequence = convAtomToStateHolder(sequence);
-        _this.input.report(_this.checkInput, _this);
+        _this.input.report(new SobokuListenerClass(_this.checkInput, _this));
         return _this;
     }
     SequenceEqualClass.prototype.checkInput = function (val) {
@@ -466,12 +481,13 @@ var SequenceEqualClass = (function (_super) {
         }
     };
     return SequenceEqualClass;
-}(SObservable));
+}(SObservableClass));
 function sequenceEqual(sequence, compareFunc) {
     return new SequenceEqualClass(sequence, compareFunc);
 }
 
 exports.state = state;
+exports.listener = listener;
 exports.reporter = reporter;
 exports.gate = gate;
 exports.sarray = sarray;
@@ -480,6 +496,7 @@ exports.editer = editer;
 exports.trigger = trigger;
 exports.ntrigger = ntrigger;
 exports.publisher = publisher;
+exports.SObservalbe = SObservableClass;
 exports.interval = interval;
 exports.timeout = timeout;
 exports.sequenceEqual = sequenceEqual;

@@ -91,7 +91,7 @@ class SobokuListenerClass {
             throw new TypeError("'listener' must be a function");
         }
     }
-    gets(news) {
+    read(news) {
         this.listener.call(this.thisArg, news);
     }
 }
@@ -102,11 +102,13 @@ class SobokuReporterClass {
     next(val) {
         const listeners = this.listeners;
         for (let i = 0; listeners.length > i; ++i)
-            listeners[i].gets(val);
+            listeners[i].read(val);
         return val;
     }
-    report(listener, thisArg) {
-        const _listener = new SobokuListenerClass(listener, thisArg);
+    report(listener) {
+        const _listener = listener instanceof SobokuListenerClass
+            ? listener
+            : new SobokuListenerClass(listener);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
     }
@@ -116,6 +118,9 @@ class SobokuReporterClass {
 }
 function reporter() {
     return new SobokuReporterClass();
+}
+function listener(listener, thisArg) {
+    return new SobokuListenerClass(listener, thisArg);
 }
 
 class StateClass extends SobokuReporterClass {
@@ -153,7 +158,7 @@ class GateClass extends SobokuReporterClass {
     constructor(gatekeeper, reporter$$1) {
         super();
         this.gatekeeper = gatekeeper;
-        reporter$$1.report(this.listener, this);
+        reporter$$1.report(new SobokuListenerClass(this.listener, this));
     }
     listener(val) {
         if (this.gatekeeper.s()) {
@@ -231,13 +236,16 @@ function getState(sh) {
     return sh.s();
 }
 class CalcClass extends SobokuReporterClass {
-    constructor(atoms) {
-        super();
-        const depends = this.depends = getDeps(atoms);
-        const listener = this.listener;
+    constructor() {
+        super(...arguments);
+        this.depends = [];
+    }
+    addDepends(atoms, listener$$1) {
+        const depends = getDeps(atoms);
         for (let i = 0; depends.length > i; ++i) {
-            depends[i].report(listener, this);
+            depends[i].report(listener$$1);
         }
+        this.depends.push.apply(this.depends, depends);
     }
     listener(val) {
         this.next(this.s());
@@ -247,11 +255,12 @@ class CalcClass extends SobokuReporterClass {
 
 class CombineClass extends CalcClass {
     constructor(atomObj) {
+        super();
         const atoms = [];
         for (let key in atomObj) {
             atoms.push(atomObj[key]);
         }
-        super(atoms);
+        super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
         this.shObj = mapObj(atomObj, convAtomToStateHolder);
     }
     s() {
@@ -264,9 +273,10 @@ function combine(atomObj) {
 
 class EditerClass extends CalcClass {
     constructor(func, atoms) {
-        super(atoms);
+        super();
         this.func = optimizeCB(func);
         this.states = map(atoms, convAtomToStateHolder);
+        super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
     }
     s() {
         const args = map(this.states, getState);
@@ -277,13 +287,14 @@ function editer(func, atoms) {
     return new EditerClass(func, atoms);
 }
 
-class TriggerClass extends SobokuReporterClass {
+class TriggerClass extends CalcClass {
     constructor(condition) {
         super();
         this.condition = condition;
-        condition.report(this.listener, this);
+        const listener$$1 = new SobokuListenerClass(this.onConditionChanged, this);
+        super.addDepends([condition], listener$$1);
     }
-    listener() {
+    onConditionChanged() {
         const s = this.s();
         if (s)
             this.next(s);
@@ -304,46 +315,51 @@ function ntrigger(condition) {
     return new NTriggerClass(condition);
 }
 
-class PublisherClass extends SobokuReporterClass {
+class PublisherClass extends CalcClass {
     constructor(permition, reporter$$1) {
         super();
         this.permition = permition;
         this.reporter = reporter$$1;
-        permition.report(this.permitionChanged, this);
-        reporter$$1.report(this.publish, this);
+        this.prevPermition = permition.s();
+        super.addDepends([permition], new SobokuListenerClass(this.permitionChanged, this));
+        super.addDepends([reporter$$1], new SobokuListenerClass(this.publish, this));
     }
     s() {
         return this.reporter.s();
     }
-    publish(val) {
-        if (this.permition.s())
-            this.next(val);
-    }
-    permitionChanged(permition) {
-        if (permition)
+    publish() {
+        if (this.permition.s()) {
             this.next(this.reporter.s());
+        }
+    }
+    permitionChanged() {
+        const permition = this.permition.s();
+        if (permition && this.prevPermition === false) {
+            this.next(this.reporter.s());
+        }
+        this.prevPermition = permition;
     }
 }
 function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-class SObservable {
+class SObservableClass {
     constructor() {
         this.output = new SobokuReporterClass();
     }
 }
 
-class TimerObservable extends SObservable {
+class TimerObservable extends SObservableClass {
     constructor(ms) {
         super();
         this.input = state(false);
         this.cb = () => this.output.next(Date.now());
         this.isRunning = false;
         const _ms = this.ms = convAtomToStateHolder(ms);
-        this.input.report(this.fireTimer, this);
+        this.input.report(new SobokuListenerClass(this.fireTimer, this));
         if (isSobokuReporter(_ms))
-            _ms.report(this.msChanged, this);
+            _ms.report(new SobokuListenerClass(this.msChanged, this));
     }
     msChanged(ms) {
         if (this.isRunning) {
@@ -384,14 +400,14 @@ function timeout(ms) {
 function isEqual(x, y) {
     return x === y;
 }
-class SequenceEqualClass extends SObservable {
+class SequenceEqualClass extends SObservableClass {
     constructor(sequence, compare = isEqual) {
         super();
         this.input = new SobokuReporterClass();
         this.i = 0;
         this.compare = compare;
         this.sequence = convAtomToStateHolder(sequence);
-        this.input.report(this.checkInput, this);
+        this.input.report(new SobokuListenerClass(this.checkInput, this));
     }
     checkInput(val) {
         const sequence = this.sequence.s();
@@ -409,5 +425,5 @@ function sequenceEqual(sequence, compareFunc) {
     return new SequenceEqualClass(sequence, compareFunc);
 }
 
-export { state, reporter, gate, sarray, combine, editer, trigger, ntrigger, publisher, interval, timeout, sequenceEqual };
+export { state, listener, reporter, gate, sarray, combine, editer, trigger, ntrigger, publisher, SObservableClass as SObservalbe, interval, timeout, sequenceEqual };
 //# sourceMappingURL=soboku.mjs.map
