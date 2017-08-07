@@ -66,7 +66,7 @@ timer.input.next(true);
 
 ## API
 
-### Functions
+### Reporter
 
 #### `reporter<T>(): Reporter<T>`
 
@@ -80,6 +80,28 @@ message.next("Hello soboku");
 // console
 // Hello soboku
 ~~~
+
+#### `listener<T>(func: Listener<T>, thisArg?: any): IListener<T>`
+
+#### `gate<T> gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>): IReporter<T>`
+
+~~~ typescript
+import { gate, reporter, state } from "soboku"
+
+const done = state(false);
+const _message = reporter<string>();
+const message = gate(done, _message);
+message.report(console.log);
+
+_message.next("Hello");
+done.next(true);
+_message.next("Bye");
+
+// console
+// Bye
+~~~
+
+### State
 
 #### `state<T>(initial: T): State<T>`
 
@@ -212,6 +234,8 @@ count.next(false);
 // true
 ~~~
 
+### SObservable
+
 #### `interval(ms: Atom<number>): ISObservable<State<boolean>, number>`
 ~~~ typescript
 import { interval } from "soboku"
@@ -293,8 +317,7 @@ IReporter\<T> & IProgressabel\<T> & IStateHolder\<T>
 - next(val: T): T
 
 #### `IReporter<T>`
-
-- report(listener: Listener<T> | IListener<T>): Unsubscriber
+- report(listener: Listener\<T> | IListener\<T>): Unsubscriber
 
 - listenerCount(): number
 
