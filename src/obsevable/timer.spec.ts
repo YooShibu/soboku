@@ -1,5 +1,6 @@
 import { interval, timeout } from "./timer";
 import { Atom, Reporter, ISObservable, State } from "../../index.d";
+import { listener } from "../reporter/reporter";
 import { trigger } from "../calc/trigger";
 import { editer } from "../calc/editer";
 import { state } from "../state/state";
@@ -15,8 +16,8 @@ class Counter<T extends number | State<number>> {
         this.ms = ms;
         this.times = times;
         this.timer = timer(ms);
-        this.timer.output.report(this.inc, this);
-        this.isEnd.report(this.end, this);
+        this.timer.output.report(listener(this.inc, this));
+        this.isEnd.report(listener(this.end, this));
     }
 
     private inc() {

@@ -1,14 +1,14 @@
-import { Reporter, ISArray, IStateHolder, ISObservable } from "../../index.d";
+import { Reporter, ISArray, ISObservable, IStateHolder } from "../../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
 import { convAtomToStateHolder } from "../state/state";
-import { SObservable } from "./observable";
+import { SObservableClass } from "./observable";
 
 
 function isEqual(x: any, y: any): boolean {
     return x === y;
 }
 
-class SequenceEqualClass<T> extends SObservable<Reporter<T>, true> {
+class SequenceEqualClass<T> extends SObservableClass<Reporter<T>, true> {
     public readonly input = new SobokuReporterClass<T>();
     private readonly compare: (x: any, y: any) => boolean;
     private readonly sequence: IStateHolder<T[]>;
@@ -18,7 +18,7 @@ class SequenceEqualClass<T> extends SObservable<Reporter<T>, true> {
         super();
         this.compare = compare;
         this.sequence =  convAtomToStateHolder(sequence);
-        this.input.report(this.checkInput, this);
+        this.input.report(new SobokuListenerClass(this.checkInput, this));
     }
 
     private checkInput(val: T): void {
@@ -35,6 +35,6 @@ class SequenceEqualClass<T> extends SObservable<Reporter<T>, true> {
     
 }
 
-export function sequenceEqual<T>(sequence: T[] | ISArray<T>, compareFunc?: (x: T, y: T) => boolean) {
+export function sequenceEqual<T>(sequence: T[] | ISArray<T>, compareFunc?: (x: T, y: T) => boolean): ISObservable<Reporter<T>, true> {
     return new SequenceEqualClass(sequence, compareFunc);
 }

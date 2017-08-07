@@ -274,6 +274,9 @@ T | StateHolder\<T>
 #### `Calc<T>`
 IReporter\<T> & IStateHolder\<T>
 
+#### `Listener<T>`
+(val: T) => void;
+
 #### `Reporter<T>`
 IReporter\<T> & IProgressable\<T>
 
@@ -283,12 +286,15 @@ IReporter\<T> & IProgressabel\<T> & IStateHolder\<T>
 
 ### Interfaces
 
+#### `IListener<T>`
+- read(val: T) => void
+
 #### `IProgressable<T>`
 - next(val: T): T
 
 #### `IReporter<T>`
 
-- report(listener: (val: T) => void): Unsubscriber
+- report(listener: Listener<T> | IListener<T>): Unsubscriber
 
 - listenerCount(): number
 
@@ -298,7 +304,7 @@ IReporter\<T> & IProgressabel\<T> & IStateHolder\<T>
 #### `IStateHolder<T>`
 - s(): T
 
-#### `ISobokuArray<T> extends IReporter<T[]> implements IStateHolder<T>`
+#### `ISArray<T> extends IReporter<T[]> implements IStateHolder<T>`
 - s(): T[];
 - pop(): T | undefined;
 - push(...items: T[]): number;

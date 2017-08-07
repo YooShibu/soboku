@@ -1,4 +1,4 @@
-import { Listener, IReporter, IUnsubscriber, Reporter } from "../../index.d";
+import { Listener, IReporter, IListener, IUnsubscriber, Reporter } from "../../index.d";
 import * as u from "../util";
 
 
@@ -24,7 +24,7 @@ class UnListenerClass<T> implements IUnsubscriber {
     
 }
 
-export class SobokuListenerClass<T> {
+export class SobokuListenerClass<T> implements IListener<T> {
 
     constructor(private readonly listener: Listener<T>, private readonly thisArg?: any) {
         if (typeof listener !== "function") {
@@ -32,7 +32,7 @@ export class SobokuListenerClass<T> {
         }
     }
 
-    public gets(news: T) {
+    public read(news: T) {
         this.listener.call(this.thisArg, news);
     }
     
@@ -44,12 +44,14 @@ export class SobokuReporterClass<T> implements IReporter<T> {
     public next(val: T): T {
         const listeners = this.listeners;
         for (let i = 0; listeners.length > i; ++i)
-            listeners[i].gets(val);
+            listeners[i].read(val);
         return val;
     }
 
-    public report(listener: Listener<T>, thisArg?: any): IUnsubscriber {
-        const _listener = new SobokuListenerClass(listener, thisArg);
+    public report(listener: Listener<T> | SobokuListenerClass<T>): IUnsubscriber {
+        const _listener = listener instanceof SobokuListenerClass
+            ? listener
+            : new SobokuListenerClass(listener);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
     }
@@ -62,4 +64,8 @@ export class SobokuReporterClass<T> implements IReporter<T> {
 
 export function reporter<T>(): Reporter<T> {
     return new SobokuReporterClass();
+}
+
+export function listener<T>(listener: Listener<T>, thisArg?: any): SobokuListenerClass<T> {
+    return new SobokuListenerClass(listener, thisArg);
 }

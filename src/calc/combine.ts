@@ -1,5 +1,6 @@
 import { Atom, Calc, IStateHolder } from "../../index.d";
 import { convAtomToStateHolder } from "../state/state";
+import { SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 import { CalcClass, getState } from "./calc";
 
@@ -8,11 +9,12 @@ class CombineClass<T> extends CalcClass<T> {
     private readonly shObj: { [K in keyof T]: IStateHolder<T[K]> };
 
     constructor(atomObj: { [K in keyof T]: Atom<T[K]>}) {
+        super();
         const atoms: Atom<any>[] = [];
         for (let key in atomObj) {
             atoms.push(atomObj[key]);
         }
-        super(atoms);
+        super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
         this.shObj = u.mapObj(atomObj, convAtomToStateHolder);
     }
 

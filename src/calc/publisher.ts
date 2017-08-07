@@ -1,27 +1,35 @@
 import { Calc, IStateHolder } from "../../index.d";
 import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import * as u from "../util";
+import { CalcClass } from "./calc";
 
 
-class PublisherClass<T> extends SobokuReporterClass<T> implements IStateHolder<T> {
+class PublisherClass<T> extends CalcClass<T> {
+    private prevPermition: boolean;
 
     constructor(private readonly permition: Calc<boolean>, private readonly reporter: Calc<T>) {
         super();
-        permition.report(this.permitionChanged, this);
-        reporter.report(this.publish, this);
+        this.prevPermition = permition.s();
+        super.addDepends([permition], new SobokuListenerClass(this.permitionChanged, this));
+        super.addDepends([reporter], new SobokuListenerClass(this.publish, this));
     }
 
     public s(): T {
         return this.reporter.s();
     }
     
-    private publish(val: T) {
-        if (this.permition.s())
-            this.next(val);
+    private publish() {
+        if (this.permition.s()) {
+            this.next(this.reporter.s());
+        }
     }
 
-    private permitionChanged(permition: boolean) {
-        if (permition)
+    private permitionChanged() {
+        const permition = this.permition.s();
+        if (permition && this.prevPermition === false) {
             this.next(this.reporter.s());
+        }
+        this.prevPermition = permition;
     }
     
 }

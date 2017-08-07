@@ -1,12 +1,12 @@
 import { IReporter, IStateHolder } from "../../index.d";
-import { SobokuReporterClass } from "./reporter";
+import { SobokuReporterClass, SobokuListenerClass } from "./reporter";
 
 
 class GateClass<T> extends SobokuReporterClass<T> {
 
     constructor(private readonly gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>) {
         super();
-        reporter.report(this.listener, this);
+        reporter.report(new SobokuListenerClass(this.listener, this));
     }
 
     private listener(val: T): void {

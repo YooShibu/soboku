@@ -1,11 +1,11 @@
-import { ISObservable, Atom, Reporter, State, IStateHolder } from "../../index.d";
+import { Atom, Reporter, State, ISObservable, IStateHolder } from "../../index.d";
 import { convAtomToStateHolder, state } from "../state/state";
 import { SobokuListenerClass, SobokuReporterClass } from "../reporter/reporter";
 import * as u from "../util";
-import { SObservable } from "./observable";
+import { SObservableClass } from "./observable";
 
 
-abstract class TimerObservable extends SObservable<State<boolean>, number> {
+abstract class TimerObservable extends SObservableClass<State<boolean>, number> {
     public readonly input = state(false);
     protected readonly cb = () => this.output.next(Date.now());
     protected readonly ms: IStateHolder<number>;
@@ -15,9 +15,9 @@ abstract class TimerObservable extends SObservable<State<boolean>, number> {
     constructor(ms: Atom<number>) {
         super();
         const _ms = this.ms = convAtomToStateHolder(ms);
-        this.input.report(this.fireTimer, this);
+        this.input.report(new SobokuListenerClass(this.fireTimer, this));
         if (u.isSobokuReporter(_ms))
-            _ms.report(this.msChanged, this);
+            _ms.report(new SobokuListenerClass(this.msChanged, this));
     }
 
     private msChanged(ms: number) {

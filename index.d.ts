@@ -2,8 +2,11 @@ export type Listener<T> = (val: T) => void;
 export interface IUnsubscriber {
     unsubscribe(): void;
 }
+export interface IListener<T> {
+    read(val: T): void;
+}
 export interface IReporter<T> {
-    report(listener: Listener<T>, thisArg?: any): IUnsubscriber;
+    report(listener: Listener<T> | IListener<T>): IUnsubscriber;
     listenerCount(): number;
 }
 
@@ -34,6 +37,7 @@ export type Atom<T> = T | Calc<T>;
 
 export function reporter<T>(): Reporter<T>;
 export function gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T>): IReporter<T>;
+export function listener<T>(func: Listener<T>, thisArg?: any): IListener<T>;
 export function state<T>(initial: T): State<T>;
 export function sarray<T>(initial?: T[]): ISArray<T>;
 export function combine<T>(source: { [K in keyof T]: Atom<T[K]>}): Calc<T>;
@@ -48,7 +52,12 @@ export function publisher<T>(permition: Calc<boolean>, reporter: Calc<T>): Calc<
 export function trigger(condition: Calc<boolean>): Calc<boolean>;
 export function ntrigger(condition: Calc<boolean>): Calc<boolean>;
 
-export interface ISObservable<I extends Reporter<any>, O> {
+export abstract class SObservable<I extends Reporter<any>, O> {
+    abstract readonly input: I;
+    readonly output: Reporter<O>;
+}
+
+export class ISObservable<I extends Reporter<any>, O> {
     readonly input: I;
     readonly output: IReporter<O>;
 }

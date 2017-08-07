@@ -11,7 +11,7 @@ describe("publisher", () => {
     let r: IDefaultSpy;
     beforeEach(() => r = defaultSpy());
 
-    it("should publish report when permition turns true and it is true", () => {
+    it("should publish report when permition turns true", () => {
         const _num = state(10);
         const work1 = state(false);
         const work2 = state(false);
