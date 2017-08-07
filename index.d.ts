@@ -57,7 +57,7 @@ export abstract class SObservable<I extends Reporter<any>, O> {
     readonly output: Reporter<O>;
 }
 
-export class ISObservable<I extends Reporter<any>, O> {
+export interface ISObservable<I extends Reporter<any>, O> {
     readonly input: I;
     readonly output: IReporter<O>;
 }
