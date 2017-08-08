@@ -290,6 +290,22 @@ sequenceEqual.input.next("K");
 ~~~
 
 
+### Class
+
+#### `SObservable<I, O, T extends Reporter<I>>`
+This is abstract class.
+##### member
+- readonly input: T
+- readonly error: Reporter\<Error>
+- readonly output: Reporter\<O>
+- readonly reset: Reporter\<true>
+##### constructer
+- constructer(input: T);
+##### methods
+- protected abstract onInput(val: I): void;
+- protected abstract onReset(): void;
+
+
 ### Types
 
 #### `Atom<T>`
@@ -318,7 +334,6 @@ IReporter\<T> & IProgressabel\<T> & IStateHolder\<T>
 
 #### `IReporter<T>`
 - report(listener: Listener\<T> | IListener\<T>): Unsubscriber
-
 - listenerCount(): number
 
 #### `IUnsubscriber`
@@ -338,9 +353,11 @@ IReporter\<T> & IProgressabel\<T> & IStateHolder\<T>
 - splice(start: number, deleteCount: number, ...items: T[]): T[];
 - unshift(...items: T[]): number;
 
-#### `ISObservable<I extends Reporter<any>, O>`
-- readonly input: I
+#### `ISObservable<I, O, T extends Reporter<I>>`
+- readonly input: T
+- readonly error: IReporter\<Error>
 - readonly output: IReporter\<O>
+- readonly reset: IReporter\<true>
 
 ## LICENSE
 MIT

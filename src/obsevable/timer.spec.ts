@@ -4,15 +4,16 @@ import { listener } from "../reporter/reporter";
 import { trigger } from "../calc/trigger";
 import { editer } from "../calc/editer";
 import { state } from "../state/state";
+import { defaultSpy } from "../helper/helper";
 
 class Counter<T extends number | State<number>> {
     private readonly count = state(0);
     public readonly isEnd = trigger(editer(c => c === this.times, [this.count]));
     public readonly ms: T;
-    public readonly timer: ISObservable<State<boolean>, number>;
+    public readonly timer: ISObservable<boolean, number, State<boolean>>;
     private readonly times: number;
 
-    constructor(ms: T, times: number, timer: (ms: Atom<number>) => ISObservable<State<boolean>, number>) {
+    constructor(ms: T, times: number, timer: (ms: Atom<number>) => ISObservable<boolean, number, State<boolean>>) {
         this.ms = ms;
         this.times = times;
         this.timer = timer(ms);
@@ -69,6 +70,19 @@ describe("timer", () => {
 
             c.timer.input.next(true);
         });
+        it("should clear timer and input turns false", done => {
+            const timer = interval(30);
+            const r = defaultSpy();
+            timer.output.report(r.f);
+            timer.input.next(true);
+            timer.reset.next(true);
+
+            setTimeout(function() {
+                expect(r.f).toHaveBeenCalledTimes(0);
+                expect(timer.input.s()).toBeFalsy();
+                done();
+            }, 50);
+        });
     });
 
     describe("timeout", () => {
@@ -88,6 +102,19 @@ describe("timer", () => {
             });
             setTimeout(() => timer.input.next(true), 20);
             timer.input.next(true);
+        });
+        it("should clear timer and input turns false", done => {
+            const timer = timeout(30);
+            const r = defaultSpy();
+            timer.output.report(r.f);
+            timer.input.next(true);
+            timer.reset.next(true);
+
+            setTimeout(function() {
+                expect(r.f).toHaveBeenCalledTimes(0);
+                expect(timer.input.s()).toBeFalsy();
+                done();
+            }, 50);
         });
     });
     

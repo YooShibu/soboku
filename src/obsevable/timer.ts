@@ -2,34 +2,36 @@ import { Atom, Reporter, State, ISObservable, IStateHolder } from "../../index.d
 import { convAtomToStateHolder, state } from "../state/state";
 import { SobokuListenerClass, SobokuReporterClass } from "../reporter/reporter";
 import * as u from "../util";
-import { SObservableClass } from "./observable";
+import { SObservable } from "./observable";
 
 
-abstract class TimerObservable extends SObservableClass<State<boolean>, number> {
-    public readonly input = state(false);
+abstract class TimerObservable extends SObservable<boolean, number, State<boolean>> {
     protected readonly cb = () => this.output.next(Date.now());
     protected readonly ms: IStateHolder<number>;
     protected timer: NodeJS.Timer;
     protected isRunning = false;
 
     constructor(ms: Atom<number>) {
-        super();
+        super(state(false));
         const _ms = this.ms = convAtomToStateHolder(ms);
-        this.input.report(new SobokuListenerClass(this.fireTimer, this));
         if (u.isSobokuReporter(_ms))
             _ms.report(new SobokuListenerClass(this.msChanged, this));
     }
 
     private msChanged(ms: number) {
         if (this.isRunning) {
-            this.fireTimer(false);
-            this.fireTimer(true, ms);
+            this.onInput(false);
+            this.onInput(true, ms);
         }
     }
 
-    private fireTimer(trigger: boolean, ms?: number): void {
+    protected onInput(trigger: boolean, ms?: number): void {
         this.fire(trigger, ms || this.ms.s());
         this.isRunning = trigger;
+    }
+
+    protected onReset() {
+        this.input.next(false);
     }
 
     protected abstract fire(trigger: boolean, ms: number): void;
@@ -60,10 +62,10 @@ class TimeoutObservable extends TimerObservable {
 }
 
 
-export function interval(ms: Atom<number>): ISObservable<State<boolean>, number> {
+export function interval(ms: Atom<number>): ISObservable<boolean, number, State<boolean>> {
     return new IntervalObservable(ms);
 }
 
-export function timeout(ms: Atom<number>): ISObservable<State<boolean>, number> {
+export function timeout(ms: Atom<number>): ISObservable<boolean, number, State<boolean>> {
     return new TimeoutObservable(ms);
 }

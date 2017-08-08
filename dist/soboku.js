@@ -387,38 +387,59 @@ function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-var SObservableClass = (function () {
-    function SObservableClass() {
+var SObservable = (function () {
+    function SObservable(input) {
         this.output = new SobokuReporterClass();
+        this.error = new ObservableErrorClass();
+        this.reset = new SobokuReporterClass();
+        this.input = input;
+        input.report(new SobokuListenerClass(this.onInput, this));
+        this.reset.report(new SobokuListenerClass(this.onReset, this));
     }
-    return SObservableClass;
+    return SObservable;
 }());
+var ObservableErrorClass = (function (_super) {
+    __extends(ObservableErrorClass, _super);
+    function ObservableErrorClass() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ObservableErrorClass.prototype.next = function (err) {
+        if (this.listenerCount() === 0) {
+            var unhandledError = new Error("Unhandled observable error: " + err.name + ": " + err.message);
+            unhandledError.name = "UnhandledObservableErrorWarning";
+            throw unhandledError;
+        }
+        return _super.prototype.next.call(this, err);
+    };
+    return ObservableErrorClass;
+}(SobokuReporterClass));
 
 var TimerObservable = (function (_super) {
     __extends(TimerObservable, _super);
     function TimerObservable(ms) {
-        var _this = _super.call(this) || this;
-        _this.input = state(false);
+        var _this = _super.call(this, state(false)) || this;
         _this.cb = function () { return _this.output.next(Date.now()); };
         _this.isRunning = false;
         var _ms = _this.ms = convAtomToStateHolder(ms);
-        _this.input.report(new SobokuListenerClass(_this.fireTimer, _this));
         if (isSobokuReporter(_ms))
             _ms.report(new SobokuListenerClass(_this.msChanged, _this));
         return _this;
     }
     TimerObservable.prototype.msChanged = function (ms) {
         if (this.isRunning) {
-            this.fireTimer(false);
-            this.fireTimer(true, ms);
+            this.onInput(false);
+            this.onInput(true, ms);
         }
     };
-    TimerObservable.prototype.fireTimer = function (trigger, ms) {
+    TimerObservable.prototype.onInput = function (trigger, ms) {
         this.fire(trigger, ms || this.ms.s());
         this.isRunning = trigger;
     };
+    TimerObservable.prototype.onReset = function () {
+        this.input.next(false);
+    };
     return TimerObservable;
-}(SObservableClass));
+}(SObservable));
 var IntervalObservable = (function (_super) {
     __extends(IntervalObservable, _super);
     function IntervalObservable() {
@@ -461,15 +482,13 @@ var SequenceEqualClass = (function (_super) {
     __extends(SequenceEqualClass, _super);
     function SequenceEqualClass(sequence, compare) {
         if (compare === void 0) { compare = isEqual; }
-        var _this = _super.call(this) || this;
-        _this.input = new SobokuReporterClass();
+        var _this = _super.call(this, new SobokuReporterClass()) || this;
         _this.i = 0;
         _this.compare = compare;
         _this.sequence = convAtomToStateHolder(sequence);
-        _this.input.report(new SobokuListenerClass(_this.checkInput, _this));
         return _this;
     }
-    SequenceEqualClass.prototype.checkInput = function (val) {
+    SequenceEqualClass.prototype.onInput = function (val) {
         var sequence = this.sequence.s();
         if (this.compare(sequence[this.i], val) === false) {
             this.i = 0;
@@ -480,8 +499,11 @@ var SequenceEqualClass = (function (_super) {
             this.output.next(true);
         }
     };
+    SequenceEqualClass.prototype.onReset = function () {
+        this.i = 0;
+    };
     return SequenceEqualClass;
-}(SObservableClass));
+}(SObservable));
 function sequenceEqual(sequence, compareFunc) {
     return new SequenceEqualClass(sequence, compareFunc);
 }
@@ -496,7 +518,7 @@ exports.editer = editer;
 exports.trigger = trigger;
 exports.ntrigger = ntrigger;
 exports.publisher = publisher;
-exports.SObservalbe = SObservableClass;
+exports.SObservable = SObservable;
 exports.interval = interval;
 exports.timeout = timeout;
 exports.sequenceEqual = sequenceEqual;
