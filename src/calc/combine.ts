@@ -1,5 +1,5 @@
 import { Atom, Calc, IStateHolder } from "../../index.d";
-import { convAtomToStateHolder } from "../state/state";
+import { toStateHolder } from "../state/state";
 import { SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 import { CalcClass, getState } from "./calc";
@@ -15,7 +15,7 @@ class CombineClass<T> extends CalcClass<T> {
             atoms.push(atomObj[key]);
         }
         super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
-        this.shObj = u.mapObj(atomObj, convAtomToStateHolder);
+        this.shObj = u.mapObj(atomObj, toStateHolder);
     }
 
     public s() {

@@ -1,5 +1,5 @@
 import { Atom, Calc, IStateHolder } from "../../index.d";
-import { convAtomToStateHolder } from "../state/state";
+import { toStateHolder } from "../state/state";
 import { SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 import { CalcClass, getState } from "./calc";
@@ -12,7 +12,7 @@ export class EditerClass<T> extends CalcClass<T> {
     constructor(func: (...args: any[]) => T, atoms: Atom<any>[]) {
         super();
         this.func = u.optimizeCB(func);
-        this.states = u.map(atoms, convAtomToStateHolder);
+        this.states = u.map(atoms, toStateHolder);
         super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
     }
 

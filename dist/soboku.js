@@ -164,7 +164,7 @@ var StateHolderClass = (function () {
 function state(initial) {
     return new StateClass(initial);
 }
-function convAtomToStateHolder(atom) {
+function toStateHolder(atom) {
     if (isStateHolder(atom)) {
         return atom;
     }
@@ -288,7 +288,7 @@ var CombineClass = (function (_super) {
             atoms.push(atomObj[key]);
         }
         _super.prototype.addDepends.call(_this, atoms, new SobokuListenerClass(_this.listener, _this));
-        _this.shObj = mapObj(atomObj, convAtomToStateHolder);
+        _this.shObj = mapObj(atomObj, toStateHolder);
         return _this;
     }
     CombineClass.prototype.s = function () {
@@ -305,7 +305,7 @@ var EditerClass = (function (_super) {
     function EditerClass(func, atoms) {
         var _this = _super.call(this) || this;
         _this.func = optimizeCB(func);
-        _this.states = map(atoms, convAtomToStateHolder);
+        _this.states = map(atoms, toStateHolder);
         _super.prototype.addDepends.call(_this, atoms, new SobokuListenerClass(_this.listener, _this));
         return _this;
     }
@@ -388,6 +388,7 @@ function publisher(permition, reporter$$1) {
 }
 
 exports.state = state;
+exports.toStateHolder = toStateHolder;
 exports.listener = listener;
 exports.reporter = reporter;
 exports.ReporterClass = ReporterClass;

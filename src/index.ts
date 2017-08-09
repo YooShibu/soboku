@@ -1,4 +1,4 @@
-export { state } from "./state/state"
+export { state, toStateHolder } from "./state/state"
 export { listener, reporter, ReporterClass } from "./reporter/reporter"
 export { gate } from "./reporter/gate"
 export { sarray } from "./state/sarray"

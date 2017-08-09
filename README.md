@@ -122,6 +122,15 @@ nums.push(4);
 // [1, 2, 3, 4]
 ~~~
 
+#### `toStateHolder<T>(atom: Atom<T>): IStateHolder<T>`
+
+~~~ typescript
+import { toStateHolder } from "soboku"
+
+const num = toStateHolder(100);
+console.log(num.s()) // 100
+
+~~~
 
 #### `editer<T>(func: (...atoms: Atom<any>[]) => T, atoms: Atom<any>[]): Calc<T>`
 

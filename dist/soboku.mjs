@@ -147,7 +147,7 @@ class StateHolderClass {
 function state(initial) {
     return new StateClass(initial);
 }
-function convAtomToStateHolder(atom) {
+function toStateHolder(atom) {
     if (isStateHolder(atom)) {
         return atom;
     }
@@ -261,7 +261,7 @@ class CombineClass extends CalcClass {
             atoms.push(atomObj[key]);
         }
         super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
-        this.shObj = mapObj(atomObj, convAtomToStateHolder);
+        this.shObj = mapObj(atomObj, toStateHolder);
     }
     s() {
         return mapObj(this.shObj, getState);
@@ -275,7 +275,7 @@ class EditerClass extends CalcClass {
     constructor(func, atoms) {
         super();
         this.func = optimizeCB(func);
-        this.states = map(atoms, convAtomToStateHolder);
+        this.states = map(atoms, toStateHolder);
         super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
     }
     s() {
@@ -344,5 +344,5 @@ function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-export { state, listener, reporter, ReporterClass, gate, sarray, combine, editer, trigger, ntrigger, publisher };
+export { state, toStateHolder, listener, reporter, ReporterClass, gate, sarray, combine, editer, trigger, ntrigger, publisher };
 //# sourceMappingURL=soboku.mjs.map

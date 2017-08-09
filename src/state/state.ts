@@ -34,7 +34,7 @@ export function state<T>(initial: T): State<T> {
     return new StateClass(initial);
 }
 
-export function convAtomToStateHolder<T>(atom: Atom<T>): IStateHolder<T> {
+export function toStateHolder<T>(atom: Atom<T>): IStateHolder<T> {
     if (u.isStateHolder(atom)) {
         return atom;
     }
