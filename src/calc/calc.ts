@@ -1,12 +1,12 @@
 import { Atom, IStateHolder } from "../../index.d";
 import { convAtomToStateHolder } from "../state/state";
-import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import { ReporterClass, SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 
-export type Depends = { readonly depends: SobokuReporterClass<any>[] };
+export type Depends = { readonly depends: ReporterClass<any>[] };
 
-export function getDeps(atoms: Atom<any>[]): SobokuReporterClass<any>[] {
-    let result: SobokuReporterClass<any>[] = [];
+export function getDeps(atoms: Atom<any>[]): ReporterClass<any>[] {
+    let result: ReporterClass<any>[] = [];
     for (let i = 0; atoms.length > i; ++i) {
         const atom = atoms[i];
         if(u.isDepends(atom)) {
@@ -22,8 +22,8 @@ export function getState<T>(sh: IStateHolder<T>): T {
     return sh.s();
 }
 
-export abstract class CalcClass<T> extends SobokuReporterClass<T> implements IStateHolder<T>, Depends {
-    public readonly depends: SobokuReporterClass<any>[] = [];
+export abstract class CalcClass<T> extends ReporterClass<T> implements IStateHolder<T>, Depends {
+    public readonly depends: ReporterClass<any>[] = [];
 
     public abstract s(): T;
 

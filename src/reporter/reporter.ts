@@ -1,4 +1,4 @@
-import { Listener, IReporter, IListener, IUnsubscriber, Reporter } from "../../index.d";
+import { Listener, IReporter, IListener, IProgressable, IUnsubscriber, Reporter } from "../../index.d";
 import * as u from "../util";
 
 
@@ -38,7 +38,7 @@ export class SobokuListenerClass<T> implements IListener<T> {
     
 }
 
-export class SobokuReporterClass<T> implements IReporter<T> {
+export class ReporterClass<T> implements IReporter<T>, IProgressable<T> {
     private readonly listeners: SobokuListenerClass<T>[] = [];
 
     public next(val: T): T {
@@ -63,7 +63,7 @@ export class SobokuReporterClass<T> implements IReporter<T> {
 }
 
 export function reporter<T>(): Reporter<T> {
-    return new SobokuReporterClass();
+    return new ReporterClass();
 }
 
 export function listener<T>(listener: Listener<T>, thisArg?: any): SobokuListenerClass<T> {

@@ -7,6 +7,7 @@
 
 A tiny javascript package for reactive programming. Reduce global mutable flags and if-else statement from your code.
 
+
 ## How to use
 Node.js
 
@@ -20,48 +21,35 @@ Browser
     const { state } = soboku;
 </script>
 ~~~
+
+
 ## Example
 
-A countdown timer
-
 ~~~ typescript
-import { state, gate, editer, trigger, ntrigger, interval } from "soboku"
+import { state, editer, combine } from "soboku"
 
+const first = state(""),
+      last = state(""),
+      full = editer((f: string, l: string) => `${f} ${l}`.trim(), [first, last]),
+      name = combine({ first, last, full });
 
-// -----------------------------------------
-// Prepere countdown timer
-// -----------------------------------------
+full.report(console.log);
+name.report(console.log);
 
-function getTimerMessage(isRunning: boolean) {
-    return isRunning ? "Start!" : "Done!";
-}
+console.log(name.s()) // { first: "", last: "", full: "" }
 
-const _count = state(3),
-      decCount = () => _count.next(_count.s() - 1),
-      _isEnd = editer((x: number) => x === 0, [_count]),
-      isEnd = trigger(_isEnd);
-      isRunning = ntrigger(_isEnd),
-      count = gate(isRunning, _count),
-      timer = interval(1000),
-      timerMessage = editer(getTimerMessage, [timer.input]);
-      
-count.report(console.log);
-timerMessage.report(console.log);
-timer.output.report(decCount);
-isEnd.report(end => timer.input.next(!end));
+first.next("Napoléon");
+// Napoléon
+// { first: "Napoléon", last: "", full: "Napoléon" }
 
-
-// -----------------------------------------
-// Start countdown timer
-// -----------------------------------------
-
-timer.input.next(true);
-
-// Start!
-// 2
-// 1
-// Done!
+last.next("Bonaparte");
+// Napoléon Bonaparte
+// { first: "Napoléon", last: "Bonaparte", full: "Napoléon Bonaparte" }
 ~~~
+
+
+## Libraries
+- [soboku-observable](https://github.com/YooShibu/soboku-observable)
 
 
 ## API
@@ -236,7 +224,17 @@ count.next(false);
 
 ### Class
 
-
+#### `ReporterClass<T> implements IReporter<T>, IProgressable<T>`
+<dl>
+    <dt>method</dt>
+    <dd>
+        <ul>
+            <li>public next(val: T): T</li>
+            <li>public listenerCount(): number</li>
+            <li>public report(listener: Listener<T> | IListener<T>): IUnsubscriber</li>
+        </ul>
+    </dd>
+</dl>
 
 ### Types
 

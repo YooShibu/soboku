@@ -1,6 +1,6 @@
 import { IStateHolder } from "../index.d";
 import { Depends } from "./calc/calc";
-import { SobokuReporterClass, SobokuListenerClass } from "./reporter/reporter";
+import { ReporterClass, SobokuListenerClass } from "./reporter/reporter";
 
 
 export function optimizeCB<T>(func: (...args: any[]) => T): (args: any[]) => T {
@@ -72,8 +72,8 @@ export function mapObj<T extends { [key: string]: any }, U extends { [key: strin
     return result as U;
 }
 
-export function isSobokuReporter(x: any): x is SobokuReporterClass<any> {
-    return typeof x === "object" && x instanceof SobokuReporterClass;
+export function isSobokuReporter(x: any): x is ReporterClass<any> {
+    return typeof x === "object" && x instanceof ReporterClass;
 }
 
 export function isStateHolder(x: any): x is IStateHolder<any> {

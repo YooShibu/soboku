@@ -1,8 +1,8 @@
 import { ISArray } from "../../index.d";
-import { SobokuReporterClass } from "../reporter/reporter";
+import { ReporterClass } from "../reporter/reporter";
 
 
-class SobokuArrayClass<T> extends SobokuReporterClass<T[]> implements ISArray<T> {
+class SobokuArrayClass<T> extends ReporterClass<T[]> implements ISArray<T> {
     private readonly array: T[] = [];
 
     constructor(array?: T[]) {

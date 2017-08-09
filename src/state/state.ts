@@ -1,9 +1,9 @@
 import { Atom, IProgressable, State, IStateHolder } from "../../index.d";
-import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import { ReporterClass, SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 
 
-class StateClass<T> extends SobokuReporterClass<T> implements IProgressable<T> {
+class StateClass<T> extends ReporterClass<T> implements IProgressable<T> {
 
     constructor(private state: T) {
         super();

@@ -68,7 +68,7 @@ function mapObj(obj, iteratee) {
     return result;
 }
 function isSobokuReporter(x) {
-    return typeof x === "object" && x instanceof SobokuReporterClass;
+    return typeof x === "object" && x instanceof ReporterClass;
 }
 function isStateHolder(x) {
     return typeof x === "object" && typeof x.s === "function";
@@ -107,30 +107,30 @@ var SobokuListenerClass = (function () {
     };
     return SobokuListenerClass;
 }());
-var SobokuReporterClass = (function () {
-    function SobokuReporterClass() {
+var ReporterClass = (function () {
+    function ReporterClass() {
         this.listeners = [];
     }
-    SobokuReporterClass.prototype.next = function (val) {
+    ReporterClass.prototype.next = function (val) {
         var listeners = this.listeners;
         for (var i = 0; listeners.length > i; ++i)
             listeners[i].read(val);
         return val;
     };
-    SobokuReporterClass.prototype.report = function (listener) {
+    ReporterClass.prototype.report = function (listener) {
         var _listener = listener instanceof SobokuListenerClass
             ? listener
             : new SobokuListenerClass(listener);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
     };
-    SobokuReporterClass.prototype.listenerCount = function () {
+    ReporterClass.prototype.listenerCount = function () {
         return this.listeners.length;
     };
-    return SobokuReporterClass;
+    return ReporterClass;
 }());
 function reporter() {
-    return new SobokuReporterClass();
+    return new ReporterClass();
 }
 function listener(listener, thisArg) {
     return new SobokuListenerClass(listener, thisArg);
@@ -151,7 +151,7 @@ var StateClass = (function (_super) {
         return this.state;
     };
     return StateClass;
-}(SobokuReporterClass));
+}(ReporterClass));
 var StateHolderClass = (function () {
     function StateHolderClass(state) {
         this.state = state;
@@ -185,7 +185,7 @@ var GateClass = (function (_super) {
         }
     };
     return GateClass;
-}(SobokuReporterClass));
+}(ReporterClass));
 function gate(gatekeeper, reporter$$1) {
     return new GateClass(gatekeeper, reporter$$1);
 }
@@ -237,7 +237,7 @@ var SobokuArrayClass = (function (_super) {
         return result;
     };
     return SobokuArrayClass;
-}(SobokuReporterClass));
+}(ReporterClass));
 function sarray(array) {
     return new SobokuArrayClass(array);
 }
@@ -277,7 +277,7 @@ var CalcClass = (function (_super) {
     };
     
     return CalcClass;
-}(SobokuReporterClass));
+}(ReporterClass));
 
 var CombineClass = (function (_super) {
     __extends(CombineClass, _super);
@@ -387,130 +387,10 @@ function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-var SObservable = (function () {
-    function SObservable(input) {
-        this.output = new SobokuReporterClass();
-        this.error = new ObservableErrorClass();
-        this.reset = new SobokuReporterClass();
-        this.input = input;
-        input.report(new SobokuListenerClass(this.onInput, this));
-        this.reset.report(new SobokuListenerClass(this.onReset, this));
-    }
-    return SObservable;
-}());
-var ObservableErrorClass = (function (_super) {
-    __extends(ObservableErrorClass, _super);
-    function ObservableErrorClass() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ObservableErrorClass.prototype.next = function (err) {
-        if (this.listenerCount() === 0) {
-            var unhandledError = new Error("Unhandled observable error: " + err.name + ": " + err.message);
-            unhandledError.name = "UnhandledObservableErrorWarning";
-            throw unhandledError;
-        }
-        return _super.prototype.next.call(this, err);
-    };
-    return ObservableErrorClass;
-}(SobokuReporterClass));
-
-var TimerObservable = (function (_super) {
-    __extends(TimerObservable, _super);
-    function TimerObservable(ms) {
-        var _this = _super.call(this, state(false)) || this;
-        _this.cb = function () { return _this.output.next(Date.now()); };
-        _this.isRunning = false;
-        var _ms = _this.ms = convAtomToStateHolder(ms);
-        if (isSobokuReporter(_ms))
-            _ms.report(new SobokuListenerClass(_this.msChanged, _this));
-        return _this;
-    }
-    TimerObservable.prototype.msChanged = function (ms) {
-        if (this.isRunning) {
-            this.onInput(false);
-            this.onInput(true, ms);
-        }
-    };
-    TimerObservable.prototype.onInput = function (trigger, ms) {
-        this.fire(trigger, ms || this.ms.s());
-        this.isRunning = trigger;
-    };
-    TimerObservable.prototype.onReset = function () {
-        this.input.next(false);
-    };
-    return TimerObservable;
-}(SObservable));
-var IntervalObservable = (function (_super) {
-    __extends(IntervalObservable, _super);
-    function IntervalObservable() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    IntervalObservable.prototype.fire = function (trigger, ms) {
-        if (trigger === false) {
-            clearInterval(this.timer);
-        }
-        else if (this.isRunning === false) {
-            this.timer = setInterval(this.cb, ms);
-        }
-    };
-    return IntervalObservable;
-}(TimerObservable));
-var TimeoutObservable = (function (_super) {
-    __extends(TimeoutObservable, _super);
-    function TimeoutObservable() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    TimeoutObservable.prototype.fire = function (trigger, ms) {
-        clearTimeout(this.timer);
-        if (trigger) {
-            this.timer = setTimeout(this.cb, ms);
-        }
-    };
-    return TimeoutObservable;
-}(TimerObservable));
-function interval(ms) {
-    return new IntervalObservable(ms);
-}
-function timeout(ms) {
-    return new TimeoutObservable(ms);
-}
-
-function isEqual(x, y) {
-    return x === y;
-}
-var SequenceEqualClass = (function (_super) {
-    __extends(SequenceEqualClass, _super);
-    function SequenceEqualClass(sequence, compare) {
-        if (compare === void 0) { compare = isEqual; }
-        var _this = _super.call(this, new SobokuReporterClass()) || this;
-        _this.i = 0;
-        _this.compare = compare;
-        _this.sequence = convAtomToStateHolder(sequence);
-        return _this;
-    }
-    SequenceEqualClass.prototype.onInput = function (val) {
-        var sequence = this.sequence.s();
-        if (this.compare(sequence[this.i], val) === false) {
-            this.i = 0;
-            return;
-        }
-        if (++this.i === sequence.length) {
-            this.i = 0;
-            this.output.next(true);
-        }
-    };
-    SequenceEqualClass.prototype.onReset = function () {
-        this.i = 0;
-    };
-    return SequenceEqualClass;
-}(SObservable));
-function sequenceEqual(sequence, compareFunc) {
-    return new SequenceEqualClass(sequence, compareFunc);
-}
-
 exports.state = state;
 exports.listener = listener;
 exports.reporter = reporter;
+exports.ReporterClass = ReporterClass;
 exports.gate = gate;
 exports.sarray = sarray;
 exports.combine = combine;
@@ -518,8 +398,4 @@ exports.editer = editer;
 exports.trigger = trigger;
 exports.ntrigger = ntrigger;
 exports.publisher = publisher;
-exports.SObservable = SObservable;
-exports.interval = interval;
-exports.timeout = timeout;
-exports.sequenceEqual = sequenceEqual;
 //# sourceMappingURL=soboku.js.map

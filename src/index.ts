@@ -1,5 +1,5 @@
 export { state } from "./state/state"
-export { listener, reporter, SobokuReporterClass } from "./reporter/reporter"
+export { listener, reporter, ReporterClass } from "./reporter/reporter"
 export { gate } from "./reporter/gate"
 export { sarray } from "./state/sarray"
 export { combine } from "./calc/combine"

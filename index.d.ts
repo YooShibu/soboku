@@ -51,3 +51,9 @@ export function editer<T, A1, A2, A3, A4, A5, A6, A7>(func: (arg1: A1, arg2: A2,
 export function publisher<T>(permition: Calc<boolean>, reporter: Calc<T>): Calc<T>;
 export function trigger(condition: Calc<boolean>): Calc<boolean>;
 export function ntrigger(condition: Calc<boolean>): Calc<boolean>;
+
+export class ReporterClass<T> implements IReporter<T>, IProgressable<T> {
+    public next(val: T): T;
+    public listenerCount(): number;
+    public report(listener: Listener<T> | IListener<T>): IUnsubscriber;
+}

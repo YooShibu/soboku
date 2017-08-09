@@ -58,7 +58,7 @@ function mapObj(obj, iteratee) {
     return result;
 }
 function isSobokuReporter(x) {
-    return typeof x === "object" && x instanceof SobokuReporterClass;
+    return typeof x === "object" && x instanceof ReporterClass;
 }
 function isStateHolder(x) {
     return typeof x === "object" && typeof x.s === "function";
@@ -95,7 +95,7 @@ class SobokuListenerClass {
         this.listener.call(this.thisArg, news);
     }
 }
-class SobokuReporterClass {
+class ReporterClass {
     constructor() {
         this.listeners = [];
     }
@@ -117,13 +117,13 @@ class SobokuReporterClass {
     }
 }
 function reporter() {
-    return new SobokuReporterClass();
+    return new ReporterClass();
 }
 function listener(listener, thisArg) {
     return new SobokuListenerClass(listener, thisArg);
 }
 
-class StateClass extends SobokuReporterClass {
+class StateClass extends ReporterClass {
     constructor(state) {
         super();
         this.state = state;
@@ -154,7 +154,7 @@ function convAtomToStateHolder(atom) {
     return new StateHolderClass(atom);
 }
 
-class GateClass extends SobokuReporterClass {
+class GateClass extends ReporterClass {
     constructor(gatekeeper, reporter$$1) {
         super();
         this.gatekeeper = gatekeeper;
@@ -170,7 +170,7 @@ function gate(gatekeeper, reporter$$1) {
     return new GateClass(gatekeeper, reporter$$1);
 }
 
-class SobokuArrayClass extends SobokuReporterClass {
+class SobokuArrayClass extends ReporterClass {
     constructor(array) {
         super();
         this.array = [];
@@ -235,7 +235,7 @@ function getDeps(atoms) {
 function getState(sh) {
     return sh.s();
 }
-class CalcClass extends SobokuReporterClass {
+class CalcClass extends ReporterClass {
     constructor() {
         super(...arguments);
         this.depends = [];
@@ -344,103 +344,5 @@ function publisher(permition, reporter$$1) {
     return new PublisherClass(permition, reporter$$1);
 }
 
-class SObservable {
-    constructor(input) {
-        this.output = new SobokuReporterClass();
-        this.error = new ObservableErrorClass();
-        this.reset = new SobokuReporterClass();
-        this.input = input;
-        input.report(new SobokuListenerClass(this.onInput, this));
-        this.reset.report(new SobokuListenerClass(this.onReset, this));
-    }
-}
-class ObservableErrorClass extends SobokuReporterClass {
-    next(err) {
-        if (this.listenerCount() === 0) {
-            const unhandledError = new Error(`Unhandled observable error: ${err.name}: ${err.message}`);
-            unhandledError.name = "UnhandledObservableErrorWarning";
-            throw unhandledError;
-        }
-        return super.next(err);
-    }
-}
-
-class TimerObservable extends SObservable {
-    constructor(ms) {
-        super(state(false));
-        this.cb = () => this.output.next(Date.now());
-        this.isRunning = false;
-        const _ms = this.ms = convAtomToStateHolder(ms);
-        if (isSobokuReporter(_ms))
-            _ms.report(new SobokuListenerClass(this.msChanged, this));
-    }
-    msChanged(ms) {
-        if (this.isRunning) {
-            this.onInput(false);
-            this.onInput(true, ms);
-        }
-    }
-    onInput(trigger, ms) {
-        this.fire(trigger, ms || this.ms.s());
-        this.isRunning = trigger;
-    }
-    onReset() {
-        this.input.next(false);
-    }
-}
-class IntervalObservable extends TimerObservable {
-    fire(trigger, ms) {
-        if (trigger === false) {
-            clearInterval(this.timer);
-        }
-        else if (this.isRunning === false) {
-            this.timer = setInterval(this.cb, ms);
-        }
-    }
-}
-class TimeoutObservable extends TimerObservable {
-    fire(trigger, ms) {
-        clearTimeout(this.timer);
-        if (trigger) {
-            this.timer = setTimeout(this.cb, ms);
-        }
-    }
-}
-function interval(ms) {
-    return new IntervalObservable(ms);
-}
-function timeout(ms) {
-    return new TimeoutObservable(ms);
-}
-
-function isEqual(x, y) {
-    return x === y;
-}
-class SequenceEqualClass extends SObservable {
-    constructor(sequence, compare = isEqual) {
-        super(new SobokuReporterClass());
-        this.i = 0;
-        this.compare = compare;
-        this.sequence = convAtomToStateHolder(sequence);
-    }
-    onInput(val) {
-        const sequence = this.sequence.s();
-        if (this.compare(sequence[this.i], val) === false) {
-            this.i = 0;
-            return;
-        }
-        if (++this.i === sequence.length) {
-            this.i = 0;
-            this.output.next(true);
-        }
-    }
-    onReset() {
-        this.i = 0;
-    }
-}
-function sequenceEqual(sequence, compareFunc) {
-    return new SequenceEqualClass(sequence, compareFunc);
-}
-
-export { state, listener, reporter, gate, sarray, combine, editer, trigger, ntrigger, publisher, SObservable, interval, timeout, sequenceEqual };
+export { state, listener, reporter, ReporterClass, gate, sarray, combine, editer, trigger, ntrigger, publisher };
 //# sourceMappingURL=soboku.mjs.map

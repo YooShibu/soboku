@@ -1,5 +1,5 @@
 import { Calc, IStateHolder } from "../../index.d";
-import { SobokuReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import { ReporterClass, SobokuListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 import { CalcClass } from "./calc";
 
