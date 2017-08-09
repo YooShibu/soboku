@@ -1,6 +1,6 @@
 {
   "name": "soboku",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "A tiny reactive programming package",
   "main": "dist/soboku.js",
   "dependencies": {},
