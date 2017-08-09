@@ -40,6 +40,7 @@ export function gate<T>(gatekeeper: IStateHolder<boolean>, reporter: IReporter<T
 export function listener<T>(func: Listener<T>, thisArg?: any): IListener<T>;
 export function state<T>(initial: T): State<T>;
 export function sarray<T>(initial?: T[]): ISArray<T>;
+export function toStateHolder<T>(atom: Atom<T>): IStateHolder<T>;
 export function combine<T>(source: { [K in keyof T]: Atom<T[K]>}): Calc<T>;
 export function editer<T, A1>(func: (arg1: A1) => T, atoms: [Atom<A1>]): Calc<T>;
 export function editer<T, A1, A2>(func: (arg1: A1, arg2: A2) => T, atoms: [Atom<A1>, Atom<A2>]): Calc<T>;
