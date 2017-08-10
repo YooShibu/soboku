@@ -1,5 +1,5 @@
 import { Calc, IStateHolder } from "../../index.d";
-import { ReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import { ReporterClass, ListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 import { CalcClass } from "./calc";
 
@@ -10,8 +10,8 @@ class PublisherClass<T> extends CalcClass<T> {
     constructor(private readonly permition: Calc<boolean>, private readonly reporter: Calc<T>) {
         super();
         this.prevPermition = permition.s();
-        super.addDepends([permition], new SobokuListenerClass(this.permitionChanged, this));
-        super.addDepends([reporter], new SobokuListenerClass(this.publish, this));
+        super.addDepends([permition], new ListenerClass(this.permitionChanged, this));
+        super.addDepends([reporter], new ListenerClass(this.publish, this));
     }
 
     public s(): T {

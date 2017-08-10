@@ -1,5 +1,5 @@
 import { Atom, IProgressable, State, IStateHolder } from "../../index.d";
-import { ReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import { ReporterClass, ListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 
 

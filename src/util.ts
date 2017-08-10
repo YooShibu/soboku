@@ -1,6 +1,6 @@
 import { IStateHolder } from "../index.d";
 import { Depends } from "./calc/calc";
-import { ReporterClass, SobokuListenerClass } from "./reporter/reporter";
+import { ReporterClass, ListenerClass } from "./reporter/reporter";
 
 
 export function optimizeCB<T>(func: (...args: any[]) => T): (args: any[]) => T {

@@ -1,6 +1,6 @@
 import { Atom, IStateHolder } from "../../index.d";
 import { toStateHolder } from "../state/state";
-import { ReporterClass, SobokuListenerClass } from "../reporter/reporter";
+import { ReporterClass, ListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 
 export type Depends = { readonly depends: ReporterClass<any>[] };
@@ -27,7 +27,7 @@ export abstract class CalcClass<T> extends ReporterClass<T> implements IStateHol
 
     public abstract s(): T;
 
-    protected addDepends(atoms: Atom<any>[], listener: SobokuListenerClass<any>) {
+    protected addDepends(atoms: Atom<any>[], listener: ListenerClass<any>) {
         const depends = getDeps(atoms);
         for (let i = 0; depends.length > i; ++i) {
             depends[i].report(listener);

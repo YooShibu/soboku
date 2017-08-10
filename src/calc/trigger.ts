@@ -1,5 +1,5 @@
 import { Atom, Calc, IStateHolder } from "../../index.d";
-import { SobokuListenerClass } from "../reporter/reporter";
+import { ListenerClass } from "../reporter/reporter";
 import * as u from "../util";
 import { CalcClass } from "./calc";
 
@@ -8,7 +8,7 @@ class TriggerClass extends CalcClass<boolean> {
 
     constructor(private readonly condition: Calc<boolean>) {
         super();
-        const listener = new SobokuListenerClass(this.onConditionChanged, this);
+        const listener = new ListenerClass(this.onConditionChanged, this);
         super.addDepends([condition], listener);
     }
 
