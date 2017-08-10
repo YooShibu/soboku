@@ -241,6 +241,7 @@ count.next(false);
             <li>public next(val: T): T</li>
             <li>public listenerCount(): number</li>
             <li>public report(listener: Listener<T> | IListener<T>): IUnsubscriber</li>
+            <li>public reportOnce(listener: Listener<T> | IListener<T>): IUnsubscriber</li>
         </ul>
     </dd>
 </dl>
