@@ -94,18 +94,28 @@ var UnListenerClass = (function () {
     };
     return UnListenerClass;
 }());
-var SobokuListenerClass = (function () {
-    function SobokuListenerClass(listener, thisArg) {
+var ListenerClass = (function () {
+    function ListenerClass(listener, thisArg) {
         this.listener = listener;
         this.thisArg = thisArg;
         if (typeof listener !== "function") {
             throw new TypeError("'listener' must be a function");
         }
     }
-    SobokuListenerClass.prototype.read = function (news) {
+    ListenerClass.prototype.read = function (news) {
         this.listener.call(this.thisArg, news);
     };
-    return SobokuListenerClass;
+    return ListenerClass;
+}());
+var ListenerOnceClass = (function () {
+    function ListenerOnceClass(listener) {
+        this.listener = listener;
+    }
+    ListenerOnceClass.prototype.read = function (news) {
+        this.listener.read(news);
+        this.unsubscriber.unsubscribe();
+    };
+    return ListenerOnceClass;
 }());
 var ReporterClass = (function () {
     function ReporterClass() {
@@ -113,27 +123,36 @@ var ReporterClass = (function () {
     }
     ReporterClass.prototype.next = function (val) {
         var listeners = this.listeners;
-        for (var i = 0; listeners.length > i; ++i)
+        for (var i = 0; listeners.length > i; ++i) {
             listeners[i].read(val);
+        }
         return val;
     };
     ReporterClass.prototype.report = function (listener) {
-        var _listener = listener instanceof SobokuListenerClass
-            ? listener
-            : new SobokuListenerClass(listener);
+        var _listener = toListener(listener);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
+    };
+    ReporterClass.prototype.reportOnce = function (listener) {
+        var _listener = new ListenerOnceClass(toListener(listener));
+        this.listeners.push(_listener);
+        return _listener.unsubscriber = new UnListenerClass(this.listeners, _listener);
     };
     ReporterClass.prototype.listenerCount = function () {
         return this.listeners.length;
     };
     return ReporterClass;
 }());
+function toListener(listener) {
+    return listener instanceof ListenerClass
+        ? listener
+        : new ListenerClass(listener);
+}
 function reporter() {
     return new ReporterClass();
 }
 function listener(listener, thisArg) {
-    return new SobokuListenerClass(listener, thisArg);
+    return new ListenerClass(listener, thisArg);
 }
 
 var StateClass = (function (_super) {
@@ -176,7 +195,7 @@ var GateClass = (function (_super) {
     function GateClass(gatekeeper, reporter$$1) {
         var _this = _super.call(this) || this;
         _this.gatekeeper = gatekeeper;
-        reporter$$1.report(new SobokuListenerClass(_this.listener, _this));
+        reporter$$1.report(new ListenerClass(_this.listener, _this));
         return _this;
     }
     GateClass.prototype.listener = function (val) {
@@ -287,7 +306,7 @@ var CombineClass = (function (_super) {
         for (var key in atomObj) {
             atoms.push(atomObj[key]);
         }
-        _super.prototype.addDepends.call(_this, atoms, new SobokuListenerClass(_this.listener, _this));
+        _super.prototype.addDepends.call(_this, atoms, new ListenerClass(_this.listener, _this));
         _this.shObj = mapObj(atomObj, toStateHolder);
         return _this;
     }
@@ -306,7 +325,7 @@ var EditerClass = (function (_super) {
         var _this = _super.call(this) || this;
         _this.func = optimizeCB(func);
         _this.states = map(atoms, toStateHolder);
-        _super.prototype.addDepends.call(_this, atoms, new SobokuListenerClass(_this.listener, _this));
+        _super.prototype.addDepends.call(_this, atoms, new ListenerClass(_this.listener, _this));
         return _this;
     }
     EditerClass.prototype.s = function () {
@@ -324,7 +343,7 @@ var TriggerClass = (function (_super) {
     function TriggerClass(condition) {
         var _this = _super.call(this) || this;
         _this.condition = condition;
-        var listener$$1 = new SobokuListenerClass(_this.onConditionChanged, _this);
+        var listener$$1 = new ListenerClass(_this.onConditionChanged, _this);
         _super.prototype.addDepends.call(_this, [condition], listener$$1);
         return _this;
     }
@@ -362,8 +381,8 @@ var PublisherClass = (function (_super) {
         _this.permition = permition;
         _this.reporter = reporter$$1;
         _this.prevPermition = permition.s();
-        _super.prototype.addDepends.call(_this, [permition], new SobokuListenerClass(_this.permitionChanged, _this));
-        _super.prototype.addDepends.call(_this, [reporter$$1], new SobokuListenerClass(_this.publish, _this));
+        _super.prototype.addDepends.call(_this, [permition], new ListenerClass(_this.permitionChanged, _this));
+        _super.prototype.addDepends.call(_this, [reporter$$1], new ListenerClass(_this.publish, _this));
         return _this;
     }
     PublisherClass.prototype.s = function () {

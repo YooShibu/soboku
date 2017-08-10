@@ -83,7 +83,7 @@ class UnListenerClass {
         this.listener = null;
     }
 }
-class SobokuListenerClass {
+class ListenerClass {
     constructor(listener, thisArg) {
         this.listener = listener;
         this.thisArg = thisArg;
@@ -95,32 +95,50 @@ class SobokuListenerClass {
         this.listener.call(this.thisArg, news);
     }
 }
+class ListenerOnceClass {
+    constructor(listener) {
+        this.listener = listener;
+    }
+    read(news) {
+        this.listener.read(news);
+        this.unsubscriber.unsubscribe();
+    }
+}
 class ReporterClass {
     constructor() {
         this.listeners = [];
     }
     next(val) {
         const listeners = this.listeners;
-        for (let i = 0; listeners.length > i; ++i)
+        for (let i = 0; listeners.length > i; ++i) {
             listeners[i].read(val);
+        }
         return val;
     }
     report(listener) {
-        const _listener = listener instanceof SobokuListenerClass
-            ? listener
-            : new SobokuListenerClass(listener);
+        const _listener = toListener(listener);
         this.listeners.push(_listener);
         return new UnListenerClass(this.listeners, _listener);
+    }
+    reportOnce(listener) {
+        const _listener = new ListenerOnceClass(toListener(listener));
+        this.listeners.push(_listener);
+        return _listener.unsubscriber = new UnListenerClass(this.listeners, _listener);
     }
     listenerCount() {
         return this.listeners.length;
     }
 }
+function toListener(listener) {
+    return listener instanceof ListenerClass
+        ? listener
+        : new ListenerClass(listener);
+}
 function reporter() {
     return new ReporterClass();
 }
 function listener(listener, thisArg) {
-    return new SobokuListenerClass(listener, thisArg);
+    return new ListenerClass(listener, thisArg);
 }
 
 class StateClass extends ReporterClass {
@@ -158,7 +176,7 @@ class GateClass extends ReporterClass {
     constructor(gatekeeper, reporter$$1) {
         super();
         this.gatekeeper = gatekeeper;
-        reporter$$1.report(new SobokuListenerClass(this.listener, this));
+        reporter$$1.report(new ListenerClass(this.listener, this));
     }
     listener(val) {
         if (this.gatekeeper.s()) {
@@ -260,7 +278,7 @@ class CombineClass extends CalcClass {
         for (let key in atomObj) {
             atoms.push(atomObj[key]);
         }
-        super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
+        super.addDepends(atoms, new ListenerClass(this.listener, this));
         this.shObj = mapObj(atomObj, toStateHolder);
     }
     s() {
@@ -276,7 +294,7 @@ class EditerClass extends CalcClass {
         super();
         this.func = optimizeCB(func);
         this.states = map(atoms, toStateHolder);
-        super.addDepends(atoms, new SobokuListenerClass(this.listener, this));
+        super.addDepends(atoms, new ListenerClass(this.listener, this));
     }
     s() {
         const args = map(this.states, getState);
@@ -291,7 +309,7 @@ class TriggerClass extends CalcClass {
     constructor(condition) {
         super();
         this.condition = condition;
-        const listener$$1 = new SobokuListenerClass(this.onConditionChanged, this);
+        const listener$$1 = new ListenerClass(this.onConditionChanged, this);
         super.addDepends([condition], listener$$1);
     }
     onConditionChanged() {
@@ -321,8 +339,8 @@ class PublisherClass extends CalcClass {
         this.permition = permition;
         this.reporter = reporter$$1;
         this.prevPermition = permition.s();
-        super.addDepends([permition], new SobokuListenerClass(this.permitionChanged, this));
-        super.addDepends([reporter$$1], new SobokuListenerClass(this.publish, this));
+        super.addDepends([permition], new ListenerClass(this.permitionChanged, this));
+        super.addDepends([reporter$$1], new ListenerClass(this.publish, this));
     }
     s() {
         return this.reporter.s();
