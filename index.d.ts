@@ -7,6 +7,7 @@ export interface IListener<T> {
 }
 export interface IReporter<T> {
     report(listener: Listener<T> | IListener<T>): IUnsubscriber;
+    reportOnce(listener: Listener<T> | IListener<T>): IUnsubscriber;
     listenerCount(): number;
 }
 
@@ -57,4 +58,5 @@ export class ReporterClass<T> implements IReporter<T>, IProgressable<T> {
     public next(val: T): T;
     public listenerCount(): number;
     public report(listener: Listener<T> | IListener<T>): IUnsubscriber;
+    public reportOnce(listener: Listener<T> | IListener<T>): IUnsubscriber;
 }
